@@ -2,7 +2,7 @@
 
 A tiny autonomous pixel-art pet living inside Ghostty, drawn by a self-contained GLSL post-processing shader.
 
-**Status:** product design approved; implementation not started. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
+**Status:** M1 static sprite proof approved; M2 visibility work is being planned. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
 
 ## Start here
 
@@ -13,6 +13,25 @@ A tiny autonomous pixel-art pet living inside Ghostty, drawn by a self-contained
 5. Use the prompt in `CODEX_START.md`. **Do not start with the complete feature set.**
 
 The intended end-user installation is manual: copy one prebuilt `.glsl` file to the Ghostty config directory and add the `custom-shader` setting. Python is a build-time dependency only.
+
+## M1 proof build and preview
+
+The current artifacts are a static silhouette for testing the rendering path, not the v1 pet. With Python 3.10+ and Pillow 12.1.1 installed from `requirements-build.txt`:
+
+```sh
+python3 tools/build_m1.py --scale 1 --output dist/m1-corgi-1x.glsl
+python3 tools/build_m1.py --scale 2 --output dist/m1-corgi-2x.glsl
+python3 -m unittest discover -s tests -v
+```
+
+To preview one file, add these lines to a test Ghostty config, using the **absolute path** to the chosen shader on your machine:
+
+```ini
+custom-shader = /absolute/path/to/ghostty-pets/dist/m1-corgi-2x.glsl
+custom-shader-animation = true
+```
+
+Remove the `custom-shader` line and reload or restart Ghostty to disable the proof. See [M1 report](docs/M1_REPORT.md) for validation results, limitations, and the Linux/macOS test checklist. The PNG source is `assets/pets/corgi/m1-silhouette.png`; opaque colors are indexed in first-appearance order, transparent pixels use index zero, and eight four-bit indices are packed into each GLSL `uint`. This encoding is provisional until broader compiler and color tests.
 
 ## Documentation
 

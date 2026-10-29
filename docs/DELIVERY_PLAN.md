@@ -6,6 +6,8 @@
 
 ## M1 — Sprite-rendering feasibility (first task)
 
+**Status: COMPLETED and approved.** The user reports manual validation in Ghostty and approved M1. The manual test platform, Ghostty version, and screenshots were not supplied; recorded Linux evidence and the macOS checklist are in [M1_REPORT.md](M1_REPORT.md). The M1 palette shift remains documented for later review.
+
 **Goal:** prove a small Python-generated GLSL shader can display a static PNG-derived sprite *inside* Ghostty on a real terminal screen.
 
 **In scope:** a minimal source PNG, Python + Pillow encoder, one generated `.glsl`, Ghostty config snippet, 1×/2× pixel integrity, lower-right anchoring and transparent compositing. Art can be a rough tricolor silhouette, not final corgi artwork. A tiny unit test for reproducible output is appropriate.
