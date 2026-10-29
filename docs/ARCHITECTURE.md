@@ -35,7 +35,7 @@ Authoritative reference: https://ghostty.org/docs/config/reference
 | `iTime` | Stateless animation clock | Does not survive Ghostty restarts |
 | `iTimeDelta` | Timing diagnostics | Not required for simulation correctness; focus gaps may be large |
 | `iCurrentCursor` | Cursor cell position/dimensions | Terminal cursor, **not mouse** |
-| `iTimeCursorChange` | Heuristic activity signal | Not actual keyboard or shell event feed |
+| `iTimeCursorChange` | M2 cursor-fade restoration timing | Not a behavior or keyboard event feed after ADR-0011 |
 | `iFocus` | Surface focus behavior | Rendering may stop on unfocused surfaces |
 | `iTimeFocus` | Refocus transition | Current docs define last focus-gain time |
 | `iBackgroundColor` | Approximate background difference detection | May be misleading for selections and full-screen UIs |
@@ -102,7 +102,7 @@ For each fragment:
 
 1. Sample `iChannel0` to obtain the unmodified terminal pixel.
 2. Test whether it lies inside the responsive scene/pet bounding box; return sampled terminal pixel immediately if outside.
-3. Derive apparent behavior and animation time from `iTime`, `iFocus`, `iTimeCursorChange`, and `iTimeFocus`.
+3. Derive behavior and animation time from `iTime`, `iFocus`, and `iTimeFocus`. Use cursor timing only in the visibility layer.
 4. Decode the relevant pixel-art sprite(s) and composite in a stable order: scenery/background objects → ground/flowers → interactive objects → corgi → foreground accents.
 5. Calculate visibility alpha using cursor proximity and (if validated) local screen-occupancy detection.
 6. Composite the scene pixel with the original terminal pixel; **never alter keyboard/mouse input or resize the actual terminal grid**.
@@ -113,7 +113,9 @@ Object-level fading is favored over pixel-by-pixel holes. For instance, sample r
 
 ## 6. Stateless behavior scheduler
 
-A pure function maps `(time, focus, activity heuristic, scene seed)` → `(behavior segment, within-segment phase, x position, animation frame, object positions)`.
+**M3 amendment:** [ADR-0011](adr/0011-input-independent-behavior.md) supersedes cursor-derived Quiet/Active scheduling and the cursor-idle sleep threshold below. The current engine selects complete episodes from absolute `iTime` slots, independent of cursor input. `iFocus` selects sleep on rendered unfocused frames; `iTimeFocus` supplies a wake transition and a home rest until the next episode boundary. Cursor uniforms remain in the M2 visibility layer only.
+
+A pure function maps `(time, focus, scene seed)` → `(behavior segment, within-segment phase, x position, animation frame, object positions)`.
 
 - Use deterministic seeded pseudorandom selection across bounded segments.
 - Build complete motion episodes (start/finish at defined home/anchor poses) so adjacent segments don't pop or teleport.
@@ -121,7 +123,7 @@ A pure function maps `(time, focus, activity heuristic, scene seed)` → `(behav
 - Keep horizontally constrained x-motion and fixed ground y.
 - No dependence on `iFrame`, mutable buffers, `iTimeDelta` integration, or retained state.
 - For larger `iTime` discontinuities and refocus, evaluate the current time directly, with optional short reorientation/wake animation from `iTimeFocus`.
-- Quiet mode and sleep are overlays on the candidate schedule, with clean transitions where practicable. Cursor-change is just an approximate activity signal.
+- Focus selects sleep on rendered unfocused frames; a refocused pane wakes and rests at home until the next complete episode. Cursor input does not affect behavior.
 - Frequencies and timeout thresholds belong in source metadata/build-time constants, not hard-coded all over shader code.
 
 Potential weakness: irregularly shaped activity segments may not join perfectly without state. **M3 must test deterministic transitions under simulated timestamp jumps before accepting this design.**

@@ -1,4 +1,4 @@
-# M3 source format (schema version 1)
+# M3 source format (pet schema 1, scene schema 2)
 
 M3 uses an RGBA PNG sprite sheet, a pet JSON manifest beside it, and an environment JSON manifest. The Python compiler reads all three at build time and emits one standalone GLSL file. The PNG is the editable art source; the generated shader is not edited by hand.
 
@@ -10,9 +10,9 @@ All frame cells share a size in version 1; clips can have different counts, dura
 
 ## Environment manifest
 
-`assets/environments/m3-empty.json` demonstrates a placeholder stage with no backyard art. `canvas` is the source-pixel scene size; `home_x` and `ground_y` locate the pet anchor within it, with Y counted upward from the bottom. `inset` is a screen-pixel right/bottom margin. `seed` controls repeatable episode selection. `slot_ms` is the fixed episode period. `quiet_ms` and `sleep_ms` are cursor-change/focus-age thresholds; the prototype uses 10,000 and 120,000 ms.
+`assets/environments/m3-empty.json` demonstrates a schema-2 placeholder stage with no backyard art. `canvas` is the source-pixel scene size; `home_x` and `ground_y` locate the pet anchor within it, with Y counted upward from the bottom. `inset` is a screen-pixel right/bottom margin. `seed` controls repeatable episode selection. `slot_ms` is the fixed episode period. Schema 2 rejects cursor-activity modes and thresholds.
 
-Each `episode` has an `id`, a `mode` (`quiet` or `active`), a positive `weight`, and 1–16 ordered `phases`. A phase names a pet clip, duration, horizontal start/end offsets from home, and `left`/`right` facing. Every episode must begin and end at horizontal offset zero, and adjacent phases must meet. The validator rejects positions that leave the scene. A short episode rests at home for the unused portion of its slot. Sleeping and waking use clips named `sleep` and `wake`; an `idle` clip fills episode tails.
+Each `episode` has an `id`, a positive `weight`, and 1–16 ordered `phases`. A phase names a pet clip, duration, horizontal start/end offsets from home, and `left`/`right` facing. Every episode must begin and end at horizontal offset zero, and adjacent phases must meet. The validator rejects positions that leave the scene. A short episode rests at home for the unused portion of its slot. Sleeping and waking use clips named `sleep` and `wake`; an `idle` clip fills episode tails. The manifest weights make the focused pet mostly relaxed while still allowing walks and play.
 
 The same compiler accepts a different pet PNG/manifest and scene JSON without pet-specific branches. The M3 test suite builds a second dummy pet and alternate scene. The M3 empty stage has no environment objects or art; M4 will supply the backyard and interactions.
 
@@ -29,6 +29,6 @@ The commands require `python3` to have the pinned Pillow dependency. The prototy
 
 ## Runtime and limits
 
-The generated shader is a pure function of `iTime`, `iTimeCursorChange`, `iTimeFocus`, `iFocus`, resolution, cursor uniforms, and `iChannel0`. It selects a weighted episode using a deterministic hash of the slot index. Motion uses a smoothstep horizontal path; frame selection uses explicit durations. There is no persistence, event listener, extra process, or runtime image load. Cursor-change age selects Quiet mode, while Quiet animation uses time since focus gain, so typing does not rewind its frames. An interrupted walk may visibly recenter. Focus gain and the Active→Sleeping boundary retain brief global transitions. M2 cursor/text fading remains localized to the pet region.
+The generated shader is a pure function of `iTime`, `iTimeFocus`, `iFocus`, resolution, cursor uniforms, and `iChannel0`. It selects a weighted episode using a deterministic hash of the absolute time slot. Motion uses a smoothstep horizontal path; frame selection uses explicit durations. There is no persistence, event listener, extra process, or runtime image load. Cursor changes never alter behavior or global opacity. An unfocused pane selects sleep on frames it renders. Focus gain runs a brief wake transition, then holds at home until the next complete episode can start. M2 cursor/text fading remains localized to the pet region.
 
-The cursor-change uniform records position/color changes, not every key press. Unfocused surfaces may stop redrawing. Identical surfaces can have identical schedules. Long-lived float32 shader time loses subsecond resolution eventually. The M2 text detector remains heuristic and may fade the pet on terminal graphics or miss unusual glyphs. Remove the `custom-shader` line and reload or restart Ghostty to disable the prototype.
+Unfocused surfaces may stop redrawing. Identical surfaces can have identical schedules. Long-lived float32 shader time loses subsecond resolution eventually. The M2 text detector remains heuristic and may fade the pet on terminal graphics or miss unusual glyphs. Remove the `custom-shader` line and reload or restart Ghostty to disable the prototype.

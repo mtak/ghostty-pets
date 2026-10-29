@@ -40,6 +40,8 @@ Create a charming, unobtrusive miniature pixel-art world rendered **inside** eac
 | Art pipeline | PNG sprite sheets + JSON metadata → Python/Pillow generator → standalone GLSL |
 | Distribution | **Manual** download/copy and Ghostty config; no installer |
 
+**M3 amendment approved after manual feedback:** [ADR-0011](adr/0011-input-independent-behavior.md) supersedes the Activity row, FR-10, and the Quiet-mode part of FR-14 for the current v1 direction. Cursor input affects only visibility, not pet or environment behavior. Focus controls sleep/wake. The two-minute cursor-idle sleep rule and cursor-based Quiet mode are retired. The original rows below remain as design history.
+
 ## 3. V1 functional requirements
 
 ### Visual and scene

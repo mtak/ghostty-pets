@@ -85,8 +85,6 @@ def _definitions(pet: Pet, scene: Scene, scale: int) -> str:
         f"const int M3_INSET = {scene.inset};",
         f"const int M3_SCALE = {scale};",
         f"const int M3_SLOT_MS = {scene.slot_ms};",
-        f"const float M3_QUIET_S = {scene.quiet_ms / 1000:.6f};",
-        f"const float M3_SLEEP_S = {scene.sleep_ms / 1000:.6f};",
         f"const uint M3_SEED = {scene.seed}u;",
         f"const int M3_IDLE = {clip_ids['idle']};",
         f"const int M3_SLEEP = {clip_ids['sleep']};",
@@ -105,16 +103,13 @@ def _definitions(pet: Pet, scene: Scene, scale: int) -> str:
         _array("int", "M3_PHASE_TO", phase_to),
         _array("int", "M3_PHASE_FLIP", phase_flip),
     ]
-    for mode in ("quiet", "active"):
-        ids = [i for i, e in enumerate(scene.episodes) if e.mode == mode]
-        cumulative = []
-        weight = 0
-        for i in ids:
-            weight += scene.episodes[i].weight
-            cumulative.append(weight)
-        sections.append(_array("int", f"M3_{mode.upper()}_EP", ids))
-        sections.append(_array("int", f"M3_{mode.upper()}_CUM", cumulative))
-        sections.append(f"const int M3_{mode.upper()}_TOTAL = {weight};")
+    cumulative = []
+    weight = 0
+    for episode in scene.episodes:
+        weight += episode.weight
+        cumulative.append(weight)
+    sections.append(_array("int", "M3_EP_CUM", cumulative))
+    sections.append(f"const int M3_EP_TOTAL = {weight};")
     sections.append(_array("uint", "M3_DATA", _pack(pet.pixels)))
     colors = ["vec3(0.0)"] + [f"vec3({r}.0, {g}.0, {b}.0) / 255.0" for r, g, b in pet.palette]
     colors += ["vec3(0.0)"] * (16 - len(colors))
@@ -131,18 +126,11 @@ uint m3Hash(uint x) {
     return x ^ (x >> 16u);
 }
 
-int m3Episode(int mode, int slot) {
+int m3Episode(int slot) {
     uint random = m3Hash(uint(slot) ^ M3_SEED);
-    if (mode == 0) {
-        int value = int(random % uint(M3_QUIET_TOTAL));
-        for (int i = 0; i < M3_QUIET_EP.length(); i++) {
-            if (value < M3_QUIET_CUM[i]) return M3_QUIET_EP[i];
-        }
-    } else {
-        int value = int(random % uint(M3_ACTIVE_TOTAL));
-        for (int i = 0; i < M3_ACTIVE_EP.length(); i++) {
-            if (value < M3_ACTIVE_CUM[i]) return M3_ACTIVE_EP[i];
-        }
+    int value = int(random % uint(M3_EP_TOTAL));
+    for (int i = 0; i < M3_EP_CUM.length(); i++) {
+        if (value < M3_EP_CUM[i]) return i;
     }
     return 0;
 }
@@ -174,27 +162,24 @@ void m3Pose(out int clip, out float clipMs, out float x, out int flip, out float
     fade = 1.0;
     if (iFocus == 0) return;
 
-    float eventTime = max(iTimeCursorChange, iTimeFocus);
-    float age = max(0.0, iTime - eventTime);
-    // Cursor changes reset Quiet without changing global pet opacity.
-    // Only focus gain and the known sleep boundary use a global transition.
     float focusAge = max(0.0, iTime - iTimeFocus);
-    fade = clamp(min(focusAge, abs(age - M3_SLEEP_S)) / 0.65, 0.0, 1.0);
-    int mode = age < M3_QUIET_S ? 0 : (age < M3_SLEEP_S ? 1 : 2);
-    if (mode == 2) {
-        clipMs = (age - M3_SLEEP_S) * 1000.0;
-        return;
-    }
-    if (iTimeFocus >= iTimeCursorChange && iTime - iTimeFocus < 0.65) {
+    fade = iTimeFocus <= 0.0 ? 1.0 : clamp(focusAge / 0.65, 0.0, 1.0);
+    if (iTimeFocus > 0.0 && focusAge < 0.65) {
         clip = M3_WAKE;
-        clipMs = (iTime - iTimeFocus) * 1000.0;
+        clipMs = focusAge * 1000.0;
         return;
     }
-    // Quiet animation uses a focus-relative clock, so typing never rewinds it.
-    float modeMs = (mode == 0 ? focusAge : age - M3_QUIET_S) * 1000.0;
-    int slot = int(floor(modeMs / float(M3_SLOT_MS)));
-    float localMs = modeMs - float(slot * M3_SLOT_MS);
-    int episode = m3Episode(mode, slot);
+    // Absolute episode slots are unaffected by terminal input.
+    float absoluteMs = max(0.0, iTime * 1000.0);
+    int slot = int(floor(absoluteMs / float(M3_SLOT_MS)));
+    float slotStartMs = float(slot) * float(M3_SLOT_MS);
+    float localMs = absoluteMs - slotStartMs;
+    if (slotStartMs < iTimeFocus * 1000.0) {
+        clip = M3_IDLE;
+        clipMs = localMs;
+        return;
+    }
+    int episode = m3Episode(slot);
     int start = M3_EP_START[episode];
     for (int i = 0; i < 16; i++) {
         if (i >= M3_EP_COUNT[episode]) break;

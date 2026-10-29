@@ -26,6 +26,9 @@ class M3BuildTests(unittest.TestCase):
         self.assertLessEqual(len(built.encode()), 128 * 1024)
         self.assertIn("void mainImage", built)
         self.assertNotIn("iFrame", built)
+        behavior_source = built.split("void m3Pose", 1)[1].split("vec3 m3ToLinear", 1)[0]
+        self.assertNotIn("iTimeCursorChange", behavior_source)
+        self.assertIn("iTimeCursorChange", built)  # M2 cursor visibility remains.
 
     def test_m1_m2_artifacts_still_match(self) -> None:
         for scale in (1, 2):
@@ -44,16 +47,16 @@ class M3BuildTests(unittest.TestCase):
         self.assertEqual(select_frame(play, 166), 1)  # 166 ms * 1.15 crosses 190 ms.
 
     def test_schedule_is_deterministic_and_varied(self) -> None:
-        first = [select_episode(self.scene, "active", i).name for i in range(9)]
-        self.assertEqual(first, [select_episode(self.scene, "active", i).name for i in range(9)])
-        self.assertTrue({"walk-left", "walk-right", "play", "active-stretch"} <= set(first))
-        self.assertGreater(len({select_episode(self.scene, "active", i).name for i in range(100)}), 4)
-        later = [select_episode(self.scene, "active", i).name for i in range(9, 18)]
+        first = [select_episode(self.scene, i).name for i in range(9)]
+        self.assertEqual(first, [select_episode(self.scene, i).name for i in range(9)])
+        self.assertTrue({"walk-left", "walk-right", "play", "stretch"} <= set(first))
+        self.assertGreater(len({select_episode(self.scene, i).name for i in range(100)}), 4)
+        later = [select_episode(self.scene, i).name for i in range(9, 18)]
         self.assertNotEqual(first, later)
 
     def test_walk_continuity_and_orientation(self) -> None:
-        # Seed 5 chooses the left walk in the first Active slot.
-        t = 10.0
+        # Seed 5 chooses the left walk in the first absolute-time slot.
+        t = 0.0
         before = evaluate(self.scene, self.pet, t + .699, 0, 0, True)
         after = evaluate(self.scene, self.pet, t + .701, 0, 0, True)
         self.assertEqual((before.clip, after.clip), ("stand", "walk"))
@@ -64,30 +67,22 @@ class M3BuildTests(unittest.TestCase):
         back = evaluate(self.scene, self.pet, t + 5.0, 0, 0, True)
         self.assertEqual(back.face, "right")
         for slot in range(9):
-            start = evaluate(self.scene, self.pet, 10 + slot * 12 + .001, 0, 0, True)
-            end = evaluate(self.scene, self.pet, 10 + (slot + 1) * 12 - .001, 0, 0, True)
+            start = evaluate(self.scene, self.pet, slot * 12 + .001, 0, 0, True)
+            end = evaluate(self.scene, self.pet, (slot + 1) * 12 - .001, 0, 0, True)
             self.assertAlmostEqual(start.x, 0, places=2)
             self.assertAlmostEqual(end.x, 0, places=2)
 
-    def test_activity_focus_and_time_jumps(self) -> None:
-        self.assertEqual(evaluate(self.scene, self.pet, 9, 0, 0, True).mode, "quiet")
-        self.assertEqual(evaluate(self.scene, self.pet, 11, 0, 0, True).mode, "active")
-        self.assertEqual(evaluate(self.scene, self.pet, 121, 0, 0, True).mode, "sleeping")
+    def test_input_independence_focus_and_time_jumps(self) -> None:
+        self.assertEqual(evaluate(self.scene, self.pet, 9, 0, 0, True).mode, "active")
+        self.assertEqual(evaluate(self.scene, self.pet, 121, 0, 0, True).mode, "active")
         self.assertEqual(evaluate(self.scene, self.pet, 121, 0, 0, False).clip, "sleep")
         self.assertEqual(evaluate(self.scene, self.pet, 5000.2, 0, 5000, True).clip, "wake")
-        self.assertEqual(evaluate(self.scene, self.pet, 5002, 0, 5000, True).mode, "quiet")
-        self.assertEqual(evaluate(self.scene, self.pet, 5000.2, 5000, 0, True).mode, "quiet")
-        self.assertEqual(evaluate(self.scene, self.pet, 5000.2, 5000, 0, True).x, 0)
-        self.assertEqual(evaluate(self.scene, self.pet, 5000.2, 5000, 0, True).opacity, 1)
-        self.assertEqual(evaluate(self.scene, self.pet, 5000.3, 5000.3, 0, True).opacity, 1)
-        for time_s in (25.0, 25.2, 25.4, 50.0, 50.2):
-            pose = evaluate(self.scene, self.pet, time_s, time_s, 0, True)
-            self.assertEqual((pose.mode, pose.x, pose.opacity), ("quiet", 0, 1))
-            earlier_cursor = evaluate(self.scene, self.pet, time_s, time_s - 4, 0, True)
-            self.assertEqual(pose, earlier_cursor)
-        self.assertEqual(evaluate(self.scene, self.pet, 25.2, 25.2, 0, True).frame, 2)
-        self.assertEqual(evaluate(self.scene, self.pet, 10, 0, 0, True).opacity, 1)
-        self.assertLess(evaluate(self.scene, self.pet, 120, 0, 0, True).opacity, 1)
+        self.assertEqual(evaluate(self.scene, self.pet, 5002, 0, 5000, True).episode, "refocus-rest")
+        self.assertEqual(evaluate(self.scene, self.pet, 5004, 0, 5000, True).mode, "active")
+        for time_s in (1.0, 1.2, 25.0, 25.2, 50.0, 121.0, 5000.2):
+            baseline = evaluate(self.scene, self.pet, time_s, 0, 0, True)
+            for cursor_s in (time_s - .001, time_s - .2, time_s):
+                self.assertEqual(evaluate(self.scene, self.pet, time_s, cursor_s, 0, True), baseline)
         self.assertLess(evaluate(self.scene, self.pet, 5000.2, 0, 5000, True).opacity, 1)
 
     def test_metadata_rejects_bad_inputs(self) -> None:
@@ -113,6 +108,9 @@ class M3BuildTests(unittest.TestCase):
                 lambda d: d["episodes"][0]["phases"][0].update(clip="absent"),
                 lambda d: d["episodes"][2]["phases"][0].update(to_x=3),
                 lambda d: d["episodes"][4]["phases"][1].update(to_x=-40),
+                lambda d: d.update(schema_version=1),
+                lambda d: d["episodes"][0].update(mode="quiet"),
+                lambda d: d.update(quiet_ms=10000),
             ):
                 data = json.loads(json.dumps(scene_json))
                 change(data)

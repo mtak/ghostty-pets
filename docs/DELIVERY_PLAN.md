@@ -46,11 +46,11 @@
 
 ## M3 — Animation and behavior engine
 
-**Status: IMPLEMENTED, awaiting manual Ghostty validation and approval.** The [M3 report](M3_REPORT.md) records automated/Linux shader compilation evidence and an exact human checklist. Per the user's approved scope exception, macOS performance validation moves to M5; it is not an M3 acceptance gate.
+**Status: IMPLEMENTED, awaiting manual Ghostty validation and approval.** The [M3 report](M3_REPORT.md) records automated/Linux shader compilation evidence and an exact human checklist. [ADR-0011](adr/0011-input-independent-behavior.md) records the user's approved replacement of cursor-driven behavior with an input-independent timeline; focus still controls sleep/wake. macOS performance validation moves to M5 by a separate approved scope exception.
 
 **Goal:** establish a reproducible, extensible timeline/animation layer with **placeholder** art.
 
-**In scope:** versioned pet/environment manifests, validation, several frame animations, deterministic pseudorandom episodes, horizontal travel, transition sequences, quiet/activity-aware behavior, focus/refocus behavior and standalone generated GLSL.
+**In scope:** versioned pet/environment manifests, validation, several frame animations, deterministic pseudorandom episodes, horizontal travel, transition sequences, focus/refocus behavior and standalone generated GLSL. Cursor input is limited to M2 visibility.
 
 **Gate acceptance:**
 
@@ -58,7 +58,7 @@
 - [ ] Scripted walk→interaction→return has no visible position discontinuity.
 - [ ] Animation is a pure function of documented timing/focus inputs.
 - [ ] Fake/simulated time jumps and focus changes do not break pose lookup.
-- [ ] Active shell use demonstrably reduces motion when cursor-change signal is available.
+- [ ] Typing during a focused episode leaves its clip, frame, position, and timeline unchanged; cursor-proximity visibility still works.
 - [ ] Unfocused pane behavior confirmed on actual Ghostty frames; limitations documented.
 - [ ] Validator rejects malformed frames, references, durations, palettes and layouts.
 - [ ] Generated shader compiles without pathological load time.
@@ -75,7 +75,7 @@
 - [ ] Most time is calm; occasional activities are coherent rather than random frame changes.
 - [ ] Ground and scenery share a consistent fixed palette with transparent background.
 - [ ] Ball motion is linked to the corgi interaction; no teleport in ordinary playback.
-- [ ] Quiet mode suppresses excessive environmental animation.
+- [ ] Environmental animation remains low intensity without cursor-driven mode changes (ADR-0011).
 - [ ] New pet/environment could be added by source assets and manifests without rewriting core renderer (demonstrate with a simple dummy asset, not a second finished pet).
 
 ## M5 — Responsive layouts, performance, and release

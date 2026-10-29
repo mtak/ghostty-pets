@@ -33,7 +33,6 @@ class Phase:
 @dataclass(frozen=True)
 class Episode:
     name: str
-    mode: str
     weight: int
     phases: tuple[Phase, ...]
 
@@ -61,8 +60,6 @@ class Scene:
     inset: int
     seed: int
     slot_ms: int
-    quiet_ms: int
-    sleep_ms: int
     episodes: tuple[Episode, ...]
 
 
@@ -77,10 +74,11 @@ class Pose:
     opacity: float
 
 
-def _object(path: Path) -> dict:
+def _object(path: Path, version: int = 1) -> dict:
     value = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(value, dict) or value.get("schema_version") != 1:
-        raise ValueError(f"{path}: expected schema_version 1 object")
+    if (not isinstance(value, dict) or type(value.get("schema_version")) is not int
+            or value["schema_version"] != version):
+        raise ValueError(f"{path}: expected schema_version {version} object")
     return value
 
 
@@ -167,7 +165,7 @@ def load_pet(path: Path) -> Pet:
 
 
 def load_scene(path: Path, pet: Pet) -> Scene:
-    data = _object(path)
+    data = _object(path, version=2)
     name = data.get("id")
     if not isinstance(name, str) or not name:
         raise ValueError("scene id is required")
@@ -183,10 +181,8 @@ def load_scene(path: Path, pet: Pet) -> Scene:
     if not (0 <= ground_y < height and 0 <= home_x < width and 0 <= inset <= 128 and 0 <= seed <= 2**31 - 1):
         raise ValueError("scene anchors, inset or seed out of range")
     slot_ms = _positive_int(data.get("slot_ms"), "slot_ms", 120_000)
-    quiet_ms = _positive_int(data.get("quiet_ms"), "quiet_ms", 600_000)
-    sleep_ms = _positive_int(data.get("sleep_ms"), "sleep_ms", 3_600_000)
-    if quiet_ms >= sleep_ms:
-        raise ValueError("quiet_ms must precede sleep_ms")
+    if "quiet_ms" in data or "sleep_ms" in data:
+        raise ValueError("cursor activity thresholds are unsupported in scene schema 2")
     definitions = data.get("episodes")
     if not isinstance(definitions, list) or not 1 <= len(definitions) <= 32:
         raise ValueError("episodes must contain 1..32 entries")
@@ -198,12 +194,12 @@ def load_scene(path: Path, pet: Pet) -> Scene:
     for item in definitions:
         if not isinstance(item, dict):
             raise ValueError("invalid episode")
-        episode_name, mode = item.get("id"), item.get("mode")
+        episode_name = item.get("id")
         if not isinstance(episode_name, str) or not episode_name or episode_name in names:
             raise ValueError("episode id must be unique")
         names.add(episode_name)
-        if mode not in ("quiet", "active"):
-            raise ValueError(f"{episode_name}: unknown mode")
+        if "mode" in item:
+            raise ValueError(f"{episode_name}: cursor activity modes are unsupported")
         weight = _positive_int(item.get("weight"), "episode weight", 100)
         phase_items = item.get("phases")
         if not isinstance(phase_items, list) or not 1 <= len(phase_items) <= 16:
@@ -231,10 +227,8 @@ def load_scene(path: Path, pet: Pet) -> Scene:
             total += duration
         if previous_x != 0 or total > slot_ms:
             raise ValueError(f"{episode_name}: episode must return home within slot")
-        episodes.append(Episode(episode_name, mode, weight, tuple(phases)))
-    if not all(any(e.mode == mode for e in episodes) for mode in ("quiet", "active")):
-        raise ValueError("quiet and active episodes are required")
-    return Scene(name, width, height, ground_y, home_x, inset, seed, slot_ms, quiet_ms, sleep_ms, tuple(episodes))
+        episodes.append(Episode(episode_name, weight, tuple(phases)))
+    return Scene(name, width, height, ground_y, home_x, inset, seed, slot_ms, tuple(episodes))
 
 
 def _hash_slot(slot: int, seed: int) -> int:
@@ -246,10 +240,9 @@ def _hash_slot(slot: int, seed: int) -> int:
     return x ^ (x >> 16)
 
 
-def select_episode(scene: Scene, mode: str, slot: int) -> Episode:
-    options = [e for e in scene.episodes if e.mode == mode]
-    choice = _hash_slot(slot, scene.seed) % sum(e.weight for e in options)
-    for episode in options:
+def select_episode(scene: Scene, slot: int) -> Episode:
+    choice = _hash_slot(slot, scene.seed) % sum(e.weight for e in scene.episodes)
+    for episode in scene.episodes:
         if choice < episode.weight:
             return episode
         choice -= episode.weight
@@ -274,32 +267,23 @@ def evaluate(scene: Scene, pet: Pet, time_s: float, cursor_change_s: float, focu
     clips = {clip.name: clip for clip in pet.clips}
     if not focused:
         return Pose("sleeping", "sleep", "sleep", select_frame(clips["sleep"], time_s * 1000), 0, "right", 1)
-    event_s = max(cursor_change_s, focus_s)
-    age_ms = max(0.0, (time_s - event_s) * 1000)
-    if age_ms < scene.quiet_ms:
-        # Focus-relative Quiet time keeps breathing/look frames continuous
-        # across ordinary cursor changes (ADR-0010).
-        mode, mode_ms = "quiet", max(0.0, (time_s - focus_s) * 1000)
-    elif age_ms < scene.sleep_ms:
-        mode, mode_ms = "active", age_ms - scene.quiet_ms
-    else:
-        mode, mode_ms = "sleeping", age_ms - scene.sleep_ms
-    # Cursor changes deliberately keep full global opacity (ADR-0009).
-    # Focus gain and the known sleep boundary still have timed transitions.
+    # Cursor changes are deliberately absent from behavior evaluation.
+    # The parameter remains in the public test signature to prove invariance.
     focus_age_ms = max(0.0, (time_s - focus_s) * 1000)
-    fade = min(1.0, focus_age_ms / 650.0, abs(age_ms - scene.sleep_ms) / 650.0)
-    if mode == "sleeping":
-        return Pose(mode, "sleep", "sleep", select_frame(clips["sleep"], mode_ms), 0, "right", fade)
-    if time_s - focus_s < 0.65 and focus_s >= cursor_change_s:
-        return Pose(mode, "wake", "wake", select_frame(clips["wake"], (time_s - focus_s) * 1000), 0, "right", fade)
-    slot = int(mode_ms // scene.slot_ms)
-    local_ms = mode_ms - slot * scene.slot_ms
-    episode = select_episode(scene, mode, slot)
+    fade = 1.0 if focus_s <= 0 else min(1.0, focus_age_ms / 650.0)
+    if focus_s > 0 and focus_age_ms < 650:
+        return Pose("active", "wake", "wake", select_frame(clips["wake"], focus_age_ms), 0, "right", fade)
+    absolute_ms = max(0.0, time_s * 1000)
+    slot = int(absolute_ms // scene.slot_ms)
+    local_ms = absolute_ms - slot * scene.slot_ms
+    if slot * scene.slot_ms < focus_s * 1000:
+        return Pose("active", "refocus-rest", "idle", select_frame(clips["idle"], local_ms), 0, "right", fade)
+    episode = select_episode(scene, slot)
     for phase in episode.phases:
         if local_ms < phase.duration_ms:
             t = local_ms / phase.duration_ms
             eased = t * t * (3 - 2 * t)
             x = phase.from_x + (phase.to_x - phase.from_x) * eased
-            return Pose(mode, episode.name, phase.clip, select_frame(clips[phase.clip], local_ms), x, phase.face, fade)
+            return Pose("active", episode.name, phase.clip, select_frame(clips[phase.clip], local_ms), x, phase.face, fade)
         local_ms -= phase.duration_ms
-    return Pose(mode, episode.name, "idle", select_frame(clips["idle"], local_ms), 0, "right", fade)
+    return Pose("active", episode.name, "idle", select_frame(clips["idle"], local_ms), 0, "right", fade)

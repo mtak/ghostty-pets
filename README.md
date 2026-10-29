@@ -46,7 +46,7 @@ Choose the M2 file in the `custom-shader` config line above to preview it. The `
 
 ## M3 animation prototype
 
-M3 adds a small placeholder sprite sheet and versioned pet/environment JSON definitions. The generated 2× shader is a standalone preview of timed clips, horizontal movement, activity modes, and the M2 text/cursor fading policy. It is not final corgi art or the backyard.
+M3 adds a small placeholder sprite sheet and versioned pet/environment JSON definitions. The generated 2× shader is a standalone preview of timed clips, horizontal movement, focus-aware sleep/wake, and the M2 text/cursor fading policy. Cursor input does not change the animation timeline. It is not final corgi art or the backyard.
 
 ```sh
 python3 tools/build_m3.py --output dist/m3-placeholder-2x.glsl
