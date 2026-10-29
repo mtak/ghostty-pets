@@ -78,7 +78,14 @@ class M3BuildTests(unittest.TestCase):
         self.assertEqual(evaluate(self.scene, self.pet, 5002, 0, 5000, True).mode, "quiet")
         self.assertEqual(evaluate(self.scene, self.pet, 5000.2, 5000, 0, True).mode, "quiet")
         self.assertEqual(evaluate(self.scene, self.pet, 5000.2, 5000, 0, True).x, 0)
-        self.assertLess(evaluate(self.scene, self.pet, 5000.2, 5000, 0, True).opacity, 1)
+        self.assertEqual(evaluate(self.scene, self.pet, 5000.2, 5000, 0, True).opacity, 1)
+        self.assertEqual(evaluate(self.scene, self.pet, 5000.3, 5000.3, 0, True).opacity, 1)
+        for time_s in (25.0, 25.2, 25.4, 50.0, 50.2):
+            pose = evaluate(self.scene, self.pet, time_s, time_s, 0, True)
+            self.assertEqual((pose.mode, pose.x, pose.opacity), ("quiet", 0, 1))
+        self.assertEqual(evaluate(self.scene, self.pet, 10, 0, 0, True).opacity, 1)
+        self.assertLess(evaluate(self.scene, self.pet, 120, 0, 0, True).opacity, 1)
+        self.assertLess(evaluate(self.scene, self.pet, 5000.2, 0, 5000, True).opacity, 1)
 
     def test_metadata_rejects_bad_inputs(self) -> None:
         pet_json = json.loads(DEFAULT_PET.read_text())

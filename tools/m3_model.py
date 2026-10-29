@@ -282,7 +282,10 @@ def evaluate(scene: Scene, pet: Pet, time_s: float, cursor_change_s: float, focu
         mode, mode_ms = "active", age_ms - scene.quiet_ms
     else:
         mode, mode_ms = "sleeping", age_ms - scene.sleep_ms
-    fade = min(1.0, min(age_ms, abs(age_ms - scene.quiet_ms), abs(age_ms - scene.sleep_ms)) / 650.0)
+    # Cursor changes deliberately keep full global opacity (ADR-0009).
+    # Focus gain and the known sleep boundary still have timed transitions.
+    focus_age_ms = max(0.0, (time_s - focus_s) * 1000)
+    fade = min(1.0, focus_age_ms / 650.0, abs(age_ms - scene.sleep_ms) / 650.0)
     if mode == "sleeping":
         return Pose(mode, "sleep", "sleep", select_frame(clips["sleep"], mode_ms), 0, "right", fade)
     if time_s - focus_s < 0.65 and focus_s >= cursor_change_s:

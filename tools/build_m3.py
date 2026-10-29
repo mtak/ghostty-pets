@@ -176,7 +176,10 @@ void m3Pose(out int clip, out float clipMs, out float x, out int flip, out float
 
     float eventTime = max(iTimeCursorChange, iTimeFocus);
     float age = max(0.0, iTime - eventTime);
-    fade = clamp(min(age, min(abs(age - M3_QUIET_S), abs(age - M3_SLEEP_S))) / 0.65, 0.0, 1.0);
+    // Cursor changes reset Quiet without changing global pet opacity.
+    // Only focus gain and the known sleep boundary use a global transition.
+    float focusAge = max(0.0, iTime - iTimeFocus);
+    fade = clamp(min(focusAge, abs(age - M3_SLEEP_S)) / 0.65, 0.0, 1.0);
     int mode = age < M3_QUIET_S ? 0 : (age < M3_SLEEP_S ? 1 : 2);
     if (mode == 2) {
         clipMs = (age - M3_SLEEP_S) * 1000.0;
