@@ -46,6 +46,8 @@
 
 ## M3 — Animation and behavior engine
 
+**Status: IMPLEMENTED, awaiting manual Ghostty validation and approval.** The [M3 report](M3_REPORT.md) records automated/Linux shader compilation evidence and an exact human checklist. Per the user's approved scope exception, macOS performance validation moves to M5; it is not an M3 acceptance gate.
+
 **Goal:** establish a reproducible, extensible timeline/animation layer with **placeholder** art.
 
 **In scope:** versioned pet/environment manifests, validation, several frame animations, deterministic pseudorandom episodes, horizontal travel, transition sequences, quiet/activity-aware behavior, focus/refocus behavior and standalone generated GLSL.

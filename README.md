@@ -2,7 +2,7 @@
 
 A tiny autonomous pixel-art pet living inside Ghostty, drawn by a self-contained GLSL post-processing shader.
 
-**Status:** M1 sprite rendering and M2 visibility proofs approved; M3 has not started. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
+**Status:** M1 and M2 approved; M3 animation infrastructure is implemented and awaiting manual Ghostty validation. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
 
 ## Start here
 
@@ -44,11 +44,23 @@ python3 -m unittest discover -s tests -v
 
 Choose the M2 file in the `custom-shader` config line above to preview it. The `cursor-only` policy is a comparison build: `python3 tools/build_m2.py --scale 2 --policy cursor-only --output dist/m2-corgi-2x-cursor-only.glsl`. It removes text detection and is **not** an accepted replacement for text-aware protection. See the [M2 report](docs/M2_REPORT.md) for observed behavior and remaining tests.
 
+## M3 animation prototype
+
+M3 adds a small placeholder sprite sheet and versioned pet/environment JSON definitions. The generated 2× shader is a standalone preview of timed clips, horizontal movement, activity modes, and the M2 text/cursor fading policy. It is not final corgi art or the backyard.
+
+```sh
+python3 tools/build_m3.py --output dist/m3-placeholder-2x.glsl
+python3 -m unittest discover -s tests -v
+```
+
+Set `custom-shader` to the absolute path of `dist/m3-placeholder-2x.glsl` and keep `custom-shader-animation = true`. Remove the line and reload/restart Ghostty to disable it. See the [M3 format](docs/M3_FORMAT.md) for editable source fields and the [M3 report](docs/M3_REPORT.md) for the manual validation checklist and current limits.
+
 ## Documentation
 
 - [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md) — frozen product scope, functional requirements, UX and non-goals.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — shader constraints, proposed architecture, asset format and algorithms.
 - [`docs/DELIVERY_PLAN.md`](docs/DELIVERY_PLAN.md) — M1–M5 milestones, test matrices, review gates and release criteria.
+- [`docs/M3_FORMAT.md`](docs/M3_FORMAT.md) — versioned M3 pet/scene source format.
 - [`docs/adr/`](docs/adr/) — independently reviewable architecture decisions.
 
 ## Authoritative references

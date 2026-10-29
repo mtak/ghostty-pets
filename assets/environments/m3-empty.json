@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "empty-stage",
+  "canvas": [64, 24],
+  "ground_y": 4,
+  "home_x": 32,
+  "inset": 12,
+  "seed": 5,
+  "slot_ms": 12000,
+  "quiet_ms": 10000,
+  "sleep_ms": 120000,
+  "episodes": [
+    {"id": "quiet-breathe", "mode": "quiet", "weight": 4, "phases": [
+      {"clip": "breathe", "duration_ms": 4000, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "look", "duration_ms": 800, "from_x": 0, "to_x": 0, "face": "right"}
+    ]},
+    {"id": "quiet-look", "mode": "quiet", "weight": 1, "phases": [
+      {"clip": "idle", "duration_ms": 1600, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "look", "duration_ms": 800, "from_x": 0, "to_x": 0, "face": "left"}
+    ]},
+    {"id": "active-rest", "mode": "active", "weight": 4, "phases": [
+      {"clip": "breathe", "duration_ms": 3000, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "look", "duration_ms": 700, "from_x": 0, "to_x": 0, "face": "left"}
+    ]},
+    {"id": "active-stretch", "mode": "active", "weight": 2, "phases": [
+      {"clip": "stand", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "stretch", "duration_ms": 1000, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "sit", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"}
+    ]},
+    {"id": "walk-left", "mode": "active", "weight": 1, "phases": [
+      {"clip": "stand", "duration_ms": 700, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "walk", "duration_ms": 2500, "from_x": 0, "to_x": -12, "face": "left"},
+      {"clip": "look", "duration_ms": 500, "from_x": -12, "to_x": -12, "face": "left"},
+      {"clip": "walk", "duration_ms": 2500, "from_x": -12, "to_x": 0, "face": "right"},
+      {"clip": "sit", "duration_ms": 700, "from_x": 0, "to_x": 0, "face": "right"}
+    ]},
+    {"id": "walk-right", "mode": "active", "weight": 1, "phases": [
+      {"clip": "stand", "duration_ms": 700, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "walk", "duration_ms": 2500, "from_x": 0, "to_x": 12, "face": "right"},
+      {"clip": "look", "duration_ms": 500, "from_x": 12, "to_x": 12, "face": "right"},
+      {"clip": "walk", "duration_ms": 2500, "from_x": 12, "to_x": 0, "face": "left"},
+      {"clip": "sit", "duration_ms": 700, "from_x": 0, "to_x": 0, "face": "right"}
+    ]},
+    {"id": "play", "mode": "active", "weight": 2, "phases": [
+      {"clip": "stand", "duration_ms": 700, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "walk", "duration_ms": 1600, "from_x": 0, "to_x": 8, "face": "right"},
+      {"clip": "play", "duration_ms": 1600, "from_x": 8, "to_x": 8, "face": "right"},
+      {"clip": "walk", "duration_ms": 1600, "from_x": 8, "to_x": 0, "face": "left"},
+      {"clip": "sit", "duration_ms": 700, "from_x": 0, "to_x": 0, "face": "right"}
+    ]}
+  ]
+}
