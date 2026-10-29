@@ -49,7 +49,7 @@ On macOS Ghostty/Metal, record version, Apple hardware, display scale, and shade
 
 **Verified:** deterministic source compilation, metadata rejection, pure timeline tests, M1/M2 artifact preservation, and Linux Ghostty shader compilation.
 
-**User feedback:** the initial shader appeared to work, but the pet faded briefly on every keypress. The first revision removed the global fade; the user then observed animation restarting on typing. A second revision kept Quiet frames continuous, but input still switched the pet from an Active episode to Quiet. The user chose a fully input-independent behavior timeline. The user has not yet visually retested this latest revision.
+**User feedback:** the initial shader appeared to work, but the pet faded briefly on every keypress. The first revision removed the global fade; the user then observed animation restarting on typing. A second revision kept Quiet frames continuous, but input still switched the pet from an Active episode to Quiet. The user chose a fully input-independent behavior timeline. After trying that revision, the user reported, “Yeah, that's better. I like it.” This confirms the revised interaction is preferred; the remaining visual and performance checklist has not been reported as complete.
 
 **Inferred:** bounded source and loops limit shader work for this small placeholder. Actual GPU cost and visual continuity have not been established by automated evidence.
 
