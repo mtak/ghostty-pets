@@ -1,6 +1,6 @@
 # M2 — smart visibility feasibility
 
-- **Status:** PARTIAL; implementation ready for review, acceptance gate pending.
+- **Status:** PARTIAL; available Linux visibility cases pass, acceptance gate pending.
 - **Branch:** `codex/m2-visibility` in `.worktrees/m2`.
 - **Scope:** stateless cursor proximity fade, coherent region text fading, conservative and cursor-only comparison builds, and a small Linux visual/performance probe. M1 files remain unchanged.
 
@@ -36,20 +36,23 @@
 | M2, Vim window | [Linux Vim](evidence/m2/linux-m2-vim-bottom-right.png) |
 | Prior M2 grid with thin red edge mark | [Linux before](evidence/m2/linux-red-edge-before.png) |
 | Revised M2 grid with the same mark | [Linux after](evidence/m2/linux-red-edge-after.png) |
+| User selection over text and pet | [Selected text](evidence/m2/user-selected-text-fades.png) |
 
-## Remaining visual gate
+## Additional user validation and remaining limits
 
 ### User validation after the initial report
 
-On 29 October 2026, the user reported that the shader loads, cursor proximity fades the pet, and a TUI makes it fade. In the user's [red foreground screenshot](evidence/m2/user-red-text-no-fade.png), text overlaps a bright sprite without the expected region fade; in the [blue background screenshot](evidence/m2/user-blue-background-fade.png), the sprite fades. The active shader path for each capture and selection result have not yet been supplied.
+On 29 October 2026, the user reported that the shader loads, cursor proximity fades the pet, and a TUI makes it fade. In the user's [red foreground screenshot](evidence/m2/user-red-text-no-fade.png), text overlaps a bright sprite without the expected region fade; in the [blue background screenshot](evidence/m2/user-blue-background-fade.png), the sprite fades.
 
 The screenshots suggest a fractional display scale: the sprite's apparent width and inset are larger than their shader-pixel dimensions. Under that inferred scale, the red glyph strokes sit below the old grid's lowest sample row, while the blue background extends into it. A Ghostty shader-chain regression fixture in [m2-red-edge.glsl](../tests/fixtures/m2-red-edge.glsl) placed a thin red mark at that edge. The prior shader left **176 full-tan body pixels** in the captured region; the revised shader left **zero**, fading the body. This verifies the edge-probe change on the available Linux Ghostty build.
 
-The user then supplied a [new red-text capture](evidence/m2/user-red-text-fades-after-fix.png) and reported that the corgi fades. Pixel comparison against the [earlier red-text capture](evidence/m2/user-red-text-no-fade.png) found **996 changed pixels**, all within `x=172–205, y=97–130` of the 250 × 147 screenshots. Full-color tan pixels in the lower-right crop fell from **444 to 240**, with **196** pixels at the faded-tan color. This supports a localized body fade for the original red-text case. The active `custom-shader` line and selection result remain unreported.
+The user then supplied a [new red-text capture](evidence/m2/user-red-text-fades-after-fix.png) and reported that the corgi fades. Pixel comparison against the [earlier red-text capture](evidence/m2/user-red-text-no-fade.png) found **996 changed pixels**, all within `x=172–205, y=97–130` of the 250 × 147 screenshots. Full-color tan pixels in the lower-right crop fell from **444 to 240**, with **196** pixels at the faded-tan color. This supports a localized body fade for the original red-text case.
+
+The user confirmed the active path was `dist/m2-corgi-2x-conservative.glsl` in the M2 worktree and supplied a [selection capture](evidence/m2/user-selected-text-fades.png). The selected letters `TEXT` are visually readable, and the pet is faded over the selection. This is a user-reported pass with screenshot evidence; the user's Ghostty version and renderer were not supplied.
 
 The text detector is an image heuristic. It cannot identify semantic glyphs, and colored backgrounds, gradients, selections, and graphics may cause false positives; foreground colors similar to the background may cause false negatives. Its fixed grid can miss thin or isolated glyphs between sample points. The 0.02 linear-color threshold and the one-hit rule were tested only in the cases above.
 
-- **Selection:** NOT TESTED. An attempted X11 pointer drag did not create a visible selection in the test window; it supplies no evidence for or against the heuristic.
+- **Selection:** PASS in the user's screenshot. The local X11 automation attempt did not create a selection, so this result rests on the user's manual test and capture.
 - **Full-screen TUI overlap:** The user reports that a TUI makes the pet fade, but its exact content and overlap were not supplied. In the local Vim capture, the status line sat above the sprite, so that capture verifies loading in a TUI, not text protection under one.
 - **Dense output, light-theme baseline comparison, 1× runtime rendering, rapid cursor movements, narrow panes, HiDPI, GPU/battery impact:** NOT TESTED.
 - **macOS/Metal:** NOT TESTED. The same shader may need a color-space adjustment because Ghostty's blending default differs; do not infer compatibility or text-detection accuracy from Linux.
@@ -67,10 +70,10 @@ For each available Linux or macOS system, record OS, Ghostty version, backend/GP
 
 ## Gate and unresolved questions
 
-**Verified:** Linux dark-theme overlap protection for one ANSI fixture, localized cursor and body-region fading, smooth restoration on observed frames, M1 preservation, deterministic standalone builds, and bounded additional sampling.
+**Verified:** Linux dark-theme overlap protection for one ANSI fixture, localized cursor and body-region fading, smooth restoration on observed frames, M1 preservation, deterministic standalone builds, and bounded additional sampling. The user's captures additionally show red-text and selected-text protection with the conservative shader.
 
 **Inferred:** the fixed sample bound limits cost for this tiny sprite. The process samples varied too much to establish an incremental CPU cost, and they do not establish performance for a full backyard or on a hardware GPU.
 
-**Untested:** the selection/TUI-overlap cases and platforms listed above. The exact cross-platform background color-space policy remains open; no substantive ADR change has been made.
+**Untested:** a directly observed TUI overlap, the other visual cases and platforms listed above, and reliable GPU cost. The exact cross-platform background color-space policy remains open; no substantive ADR change has been made.
 
-**Stop: the user-reported red-text case now passes. M2 remains open pending selection and remaining readability/performance review. Do not start M3.**
+**Stop: the user-reported red-text and selection cases pass. M2 is ready for human gate review with the stated limits. Do not start M3 without explicit approval.**
