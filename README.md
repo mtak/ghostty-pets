@@ -2,7 +2,7 @@
 
 A tiny autonomous pixel-art pet living inside Ghostty, drawn by a self-contained GLSL post-processing shader.
 
-**Status:** M1 static sprite proof approved; M2 visibility work is being planned. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
+**Status:** M1 static sprite proof approved; M2 visibility proof is awaiting its review gate. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
 
 ## Start here
 
@@ -32,6 +32,17 @@ custom-shader-animation = true
 ```
 
 Remove the `custom-shader` line and reload or restart Ghostty to disable the proof. See [M1 report](docs/M1_REPORT.md) for validation results, limitations, and the Linux/macOS test checklist. The PNG source is `assets/pets/corgi/m1-silhouette.png`; opaque colors are indexed in first-appearance order, transparent pixels use index zero, and eight four-bit indices are packed into each GLSL `uint`. This encoding is provisional until broader compiler and color tests.
+
+## M2 visibility proof
+
+M2 uses the same placeholder sprite and leaves the M1 artifacts byte-identical. Build the 1× or 2× conservative text-aware proof with:
+
+```sh
+python3 tools/build_m2.py --scale 2 --policy conservative --output dist/m2-corgi-2x-conservative.glsl
+python3 -m unittest discover -s tests -v
+```
+
+Choose the M2 file in the `custom-shader` config line above to preview it. The `cursor-only` policy is a comparison build: `python3 tools/build_m2.py --scale 2 --policy cursor-only --output dist/m2-corgi-2x-cursor-only.glsl`. It removes text detection and is **not** an accepted replacement for text-aware protection. See the [M2 report](docs/M2_REPORT.md) for observed behavior and remaining tests.
 
 ## Documentation
 
