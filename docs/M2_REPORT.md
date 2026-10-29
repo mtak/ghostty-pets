@@ -43,7 +43,9 @@
 
 On 29 October 2026, the user reported that the shader loads, cursor proximity fades the pet, and a TUI makes it fade. In the user's [red foreground screenshot](evidence/m2/user-red-text-no-fade.png), text overlaps a bright sprite without the expected region fade; in the [blue background screenshot](evidence/m2/user-blue-background-fade.png), the sprite fades. The active shader path for each capture and selection result have not yet been supplied.
 
-The screenshots suggest a fractional display scale: the sprite's apparent width and inset are larger than their shader-pixel dimensions. Under that inferred scale, the red glyph strokes sit below the old grid's lowest sample row, while the blue background extends into it. A Ghostty shader-chain regression fixture in [m2-red-edge.glsl](../tests/fixtures/m2-red-edge.glsl) placed a thin red mark at that edge. The prior shader left **176 full-tan body pixels** in the captured region; the revised shader left **zero**, fading the body. This verifies the edge-probe change on the available Linux Ghostty build. **The user's original red-text case still requires a retest with the revised file.**
+The screenshots suggest a fractional display scale: the sprite's apparent width and inset are larger than their shader-pixel dimensions. Under that inferred scale, the red glyph strokes sit below the old grid's lowest sample row, while the blue background extends into it. A Ghostty shader-chain regression fixture in [m2-red-edge.glsl](../tests/fixtures/m2-red-edge.glsl) placed a thin red mark at that edge. The prior shader left **176 full-tan body pixels** in the captured region; the revised shader left **zero**, fading the body. This verifies the edge-probe change on the available Linux Ghostty build.
+
+The user then supplied a [new red-text capture](evidence/m2/user-red-text-fades-after-fix.png) and reported that the corgi fades. Pixel comparison against the [earlier red-text capture](evidence/m2/user-red-text-no-fade.png) found **996 changed pixels**, all within `x=172–205, y=97–130` of the 250 × 147 screenshots. Full-color tan pixels in the lower-right crop fell from **444 to 240**, with **196** pixels at the faded-tan color. This supports a localized body fade for the original red-text case. The active `custom-shader` line and selection result remain unreported.
 
 The text detector is an image heuristic. It cannot identify semantic glyphs, and colored backgrounds, gradients, selections, and graphics may cause false positives; foreground colors similar to the background may cause false negatives. Its fixed grid can miss thin or isolated glyphs between sample points. The 0.02 linear-color threshold and the one-hit rule were tested only in the cases above.
 
@@ -71,4 +73,4 @@ For each available Linux or macOS system, record OS, Ghostty version, backend/GP
 
 **Untested:** the selection/TUI-overlap cases and platforms listed above. The exact cross-platform background color-space policy remains open; no substantive ADR change has been made.
 
-**Stop: M2 remains open pending the user's red-text retest and remaining readability/performance review. Do not start M3.**
+**Stop: the user-reported red-text case now passes. M2 remains open pending selection and remaining readability/performance review. Do not start M3.**
