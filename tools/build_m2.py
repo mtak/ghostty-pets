@@ -12,7 +12,7 @@ else:
 
 
 VISIBILITY_GLSL = """
-// M2 visibility: three coherent source-art regions, at most 16 text probes each.
+// M2 visibility: three coherent source-art regions, at most 20 text probes each.
 vec3 m2ToLinear(vec3 color) {
     vec3 low = color / 12.92;
     vec3 high = pow((color + 0.055) / 1.055, vec3(2.4));
@@ -51,18 +51,17 @@ float m2CursorFade(vec4 region) {
 TEXT_GLSL = """
 float m2TextFade(vec4 region) {
     vec3 background = m2ToLinear(iBackgroundColor);
-    int occupied = 0;
-    for (int row = 0; row < 4; row++) {
+    for (int row = 0; row < 5; row++) {
+        // Include both edges: last-row glyphs can sit below a centered grid.
+        float rowFraction = row == 0 ? 0.04 : (row == 4 ? 0.96 : float(row) * 0.25);
         for (int col = 0; col < 4; col++) {
             vec2 pixel = mix(region.xy, region.zw,
-                             (vec2(float(col), float(row)) + vec2(0.5)) / 4.0);
+                             vec2((float(col) + 0.5) / 4.0, rowFraction));
             vec3 screen = texture(iChannel0, (floor(pixel) + vec2(0.5)) / iResolution.xy).rgb;
-            occupied += length(screen - background) > 0.02 ? 1 : 0;
+            if (length(screen - background) > 0.02) return 1.0;
         }
     }
-    // One hit is enough to protect a whole small art region. False positives
-    // favor readability; the cursor-only build exposes the heuristic's effect.
-    return occupied > 0 ? 1.0 : 0.0;
+    return 0.0;
 }
 """
 
@@ -89,7 +88,7 @@ def generate(scale: int, policy: str) -> str:
     if base.count(OLD_OUTPUT) != 1 or base.count("void mainImage") != 1:
         raise ValueError("M1 shader structure changed; review M2 integration")
     base = base.replace("// Ghostty Pets M1 static sprite proof", "// Ghostty Pets M2 visibility proof", 1)
-    base = base.replace("// Generator: m1.1;", f"// Generator: m2.1; visibility policy: {policy};", 1)
+    base = base.replace("// Generator: m1.1;", f"// Generator: m2.2; visibility policy: {policy};", 1)
     helpers = VISIBILITY_GLSL + (TEXT_GLSL if policy == "conservative" else "")
     base = base.replace("void mainImage", f"{helpers}\nvoid mainImage", 1)
     expression = "cursorFade < 0.95 ? m2TextFade(region) : 0.0" if policy == "conservative" else "0.0"

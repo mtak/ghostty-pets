@@ -1,5 +1,5 @@
 // Ghostty Pets M2 visibility proof
-// Generator: m2.1; visibility policy: cursor-only; source SHA-256: ee35922e7dfd568522b7f36950d38aef8edfda8b9335a2da26b8b48c9ed4becb
+// Generator: m2.2; visibility policy: cursor-only; source SHA-256: ee35922e7dfd568522b7f36950d38aef8edfda8b9335a2da26b8b48c9ed4becb
 // Source: assets/pets/corgi/m1-silhouette.png; scale: 2x
 const int SPRITE_WIDTH = 32;
 const int SPRITE_HEIGHT = 24;
@@ -123,7 +123,7 @@ const vec3 SPRITE_PALETTE[16] = vec3[16](
 );
 
 
-// M2 visibility: three coherent source-art regions, at most 16 text probes each.
+// M2 visibility: three coherent source-art regions, at most 20 text probes each.
 vec3 m2ToLinear(vec3 color) {
     vec3 low = color / 12.92;
     vec3 high = pow((color + 0.055) / 1.055, vec3(2.4));

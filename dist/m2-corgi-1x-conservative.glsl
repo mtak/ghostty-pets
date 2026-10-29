@@ -1,5 +1,5 @@
 // Ghostty Pets M2 visibility proof
-// Generator: m2.1; visibility policy: conservative; source SHA-256: ee35922e7dfd568522b7f36950d38aef8edfda8b9335a2da26b8b48c9ed4becb
+// Generator: m2.2; visibility policy: conservative; source SHA-256: ee35922e7dfd568522b7f36950d38aef8edfda8b9335a2da26b8b48c9ed4becb
 // Source: assets/pets/corgi/m1-silhouette.png; scale: 1x
 const int SPRITE_WIDTH = 32;
 const int SPRITE_HEIGHT = 24;
@@ -123,7 +123,7 @@ const vec3 SPRITE_PALETTE[16] = vec3[16](
 );
 
 
-// M2 visibility: three coherent source-art regions, at most 16 text probes each.
+// M2 visibility: three coherent source-art regions, at most 20 text probes each.
 vec3 m2ToLinear(vec3 color) {
     vec3 low = color / 12.92;
     vec3 high = pow((color + 0.055) / 1.055, vec3(2.4));
@@ -159,18 +159,17 @@ float m2CursorFade(vec4 region) {
 
 float m2TextFade(vec4 region) {
     vec3 background = m2ToLinear(iBackgroundColor);
-    int occupied = 0;
-    for (int row = 0; row < 4; row++) {
+    for (int row = 0; row < 5; row++) {
+        // Include both edges: last-row glyphs can sit below a centered grid.
+        float rowFraction = row == 0 ? 0.04 : (row == 4 ? 0.96 : float(row) * 0.25);
         for (int col = 0; col < 4; col++) {
             vec2 pixel = mix(region.xy, region.zw,
-                             (vec2(float(col), float(row)) + vec2(0.5)) / 4.0);
+                             vec2((float(col) + 0.5) / 4.0, rowFraction));
             vec3 screen = texture(iChannel0, (floor(pixel) + vec2(0.5)) / iResolution.xy).rgb;
-            occupied += length(screen - background) > 0.02 ? 1 : 0;
+            if (length(screen - background) > 0.02) return 1.0;
         }
     }
-    // One hit is enough to protect a whole small art region. False positives
-    // favor readability; the cursor-only build exposes the heuristic's effect.
-    return occupied > 0 ? 1.0 : 0.0;
+    return 0.0;
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
