@@ -2,7 +2,7 @@
 
 A tiny autonomous pixel-art pet living inside Ghostty, drawn by a self-contained GLSL post-processing shader.
 
-**Status:** M1 static sprite proof approved; M2 visibility proof is awaiting its review gate. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
+**Status:** M1 sprite rendering and M2 visibility proofs approved; M3 has not started. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
 
 ## Start here
 

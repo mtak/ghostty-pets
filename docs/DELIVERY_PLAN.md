@@ -27,7 +27,7 @@
 
 ## M2 — Smart visibility feasibility
 
-**Status: prototype implemented; acceptance gate pending.** Verified Linux text and cursor cases, limitations, and remaining validation are recorded in [M2_REPORT.md](M2_REPORT.md). Do not start M3 without explicit approval.
+**Status: COMPLETED and approved.** The user approved M2 after manual red-text, selection, cursor, and TUI checks. Verified Linux cases, limitations, and remaining validation are recorded in [M2_REPORT.md](M2_REPORT.md). M3 requires its own plan and approval before implementation.
 
 **Goal:** show that the overlay can protect the terminal cursor area and substantially preserve text legibility.
 

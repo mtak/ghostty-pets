@@ -1,6 +1,6 @@
 # M2 — smart visibility feasibility
 
-- **Status:** PARTIAL; available Linux visibility cases pass, acceptance gate pending.
+- **Status:** APPROVED by the user. Available Linux visibility cases pass; the limits below remain recorded.
 - **Branch:** `codex/m2-visibility` in `.worktrees/m2`.
 - **Scope:** stateless cursor proximity fade, coherent region text fading, conservative and cursor-only comparison builds, and a small Linux visual/performance probe. M1 files remain unchanged.
 
@@ -76,4 +76,4 @@ For each available Linux or macOS system, record OS, Ghostty version, backend/GP
 
 **Untested:** a directly observed TUI overlap, the other visual cases and platforms listed above, and reliable GPU cost. The exact cross-platform background color-space policy remains open; no substantive ADR change has been made.
 
-**Stop: the user-reported red-text and selection cases pass. M2 is ready for human gate review with the stated limits. Do not start M3 without explicit approval.**
+**Gate: M2 approved by the user with the stated limits. M3 has not started and requires its own implementation plan and approval.**
