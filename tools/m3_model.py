@@ -277,7 +277,9 @@ def evaluate(scene: Scene, pet: Pet, time_s: float, cursor_change_s: float, focu
     event_s = max(cursor_change_s, focus_s)
     age_ms = max(0.0, (time_s - event_s) * 1000)
     if age_ms < scene.quiet_ms:
-        mode, mode_ms = "quiet", age_ms
+        # Focus-relative Quiet time keeps breathing/look frames continuous
+        # across ordinary cursor changes (ADR-0010).
+        mode, mode_ms = "quiet", max(0.0, (time_s - focus_s) * 1000)
     elif age_ms < scene.sleep_ms:
         mode, mode_ms = "active", age_ms - scene.quiet_ms
     else:

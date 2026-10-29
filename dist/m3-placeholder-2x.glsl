@@ -106,7 +106,8 @@ void m3Pose(out int clip, out float clipMs, out float x, out int flip, out float
         clipMs = (iTime - iTimeFocus) * 1000.0;
         return;
     }
-    float modeMs = (age - (mode == 1 ? M3_QUIET_S : 0.0)) * 1000.0;
+    // Quiet animation uses a focus-relative clock, so typing never rewinds it.
+    float modeMs = (mode == 0 ? focusAge : age - M3_QUIET_S) * 1000.0;
     int slot = int(floor(modeMs / float(M3_SLOT_MS)));
     float localMs = modeMs - float(slot * M3_SLOT_MS);
     int episode = m3Episode(mode, slot);
