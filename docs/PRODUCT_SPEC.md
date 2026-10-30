@@ -1,6 +1,6 @@
 # Ghostty Pets — Product specification
 
-**Status:** frozen v1 product scope; first implementation release not yet validated.  
+**Status:** frozen v1 product scope; M1–M5 approved, with macOS/Metal validation pending under a platform-limited release label.
 **Design baseline:** Q1–Q22 agreed 29 October 2026.  
 **Target:** Ghostty on Linux and macOS.
 

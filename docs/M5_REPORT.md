@@ -1,6 +1,6 @@
 # M5 — responsive layouts, performance, and release candidate
 
-- **Status:** PARTIAL — three release shaders and automated checks are ready; resized-pane and hardware visual/performance checks require human validation. macOS/Metal remains pending by the user's approved release-label choice.
+- **Status:** APPROVED — the user reported “All works very well. Approved” on 2026-10-30 after receiving the M5 Ghostty checklist. The release remains platform-limited: the user's test platform and itemized measurements were not supplied, and macOS/Metal remains pending by the approved release-label choice.
 - **Branch/worktree:** `codex/m5-release` in `.worktrees/m5`.
 - **Scope:** three standalone 1×/2×/3× capped shaders, complete-scene → smaller complete-scene → stationary pet-only → hidden layout, manual install/recovery guide, and reproducible checks. M1–M4 builders, art, and generated artifacts remain unchanged.
 
@@ -10,6 +10,7 @@
 2. The user selected stationary idle/doze for pet-only panes. The new branch uses the same decoded pet frames and M2 localized visibility, but omits the backyard, ball, and walking/play episodes so no action lacks its object.
 3. The user chose to label macOS testing pending rather than make a macOS result a prerequisite for the Linux release candidate. The same GLSL is intended for macOS, but Metal compilation, HiDPI layout, readability, and performance are **NOT TESTED** here.
 4. M5 imports M4's validated data definition and shared shader functions. The approved M4 proof output is byte-identical; the release builder owns only responsive layout and the pet-only branch. Source-content fingerprints and a generator version identify output without checkout paths or timestamps.
+5. After receiving the exact M5 checklist, the user reported that everything worked very well and approved the milestone. This is human acceptance of the release candidate, not a detailed measurement or a separately recorded macOS result.
 
 ## Checks and measured evidence
 
@@ -50,10 +51,10 @@ On a macOS Ghostty build, record the version, Apple hardware, Metal backend, Ret
 
 ## Gate
 
-**Verified:** reproducible standalone release artifacts; bounded layout reference tests; existing source validation and prior-artifact preservation; local Linux Ghostty shader load without fatal compilation failure; a single environment-specific M4/M5 CPU/RSS comparison.
+**Verified:** reproducible standalone release artifacts; bounded layout reference tests; existing source validation and prior-artifact preservation; local Linux Ghostty shader load without fatal compilation failure; a single environment-specific M4/M5 CPU/RSS comparison. The user approved M5 after reporting success in Ghostty.
 
 **Inferred:** dynamic layout selection should use little extra GPU work because it checks at most three scales before the same M4 decoder; this is not established by frame-time data. The pure Python layout model and GLSL are intentionally parallel implementations, so actual responsive transitions require Ghostty observation.
 
-**Untested:** visual layout switching, pet-only appearance and readability, split-pane independence in M5, hardware GPU frame cost and typing latency, macOS/Metal/HiDPI behavior, and a fresh dependency install.
+**Not independently measured or itemized:** responsive screenshots, pet-only and split-pane observations, hardware GPU frame cost, typing latency, and a fresh dependency install. macOS/Metal/HiDPI behavior is **NOT TESTED**.
 
-**Stop: awaiting human M5 visual/performance validation and approval. No broader release claim is made.**
+**M5 approved. The v1 artifacts are platform-limited until macOS/Metal testing is recorded.**

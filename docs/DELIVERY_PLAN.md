@@ -82,19 +82,19 @@
 
 ## M5 — Responsive layouts, performance, and release
 
-**Status: IMPLEMENTED as a Linux-load-checked release candidate, awaiting human responsive-layout and performance validation.** macOS/Metal testing is pending by the user's approved platform-label choice. The [M5 report](M5_REPORT.md) records checks and an exact Linux/macOS checklist.
+**Status: COMPLETED — approved by the user on 2026-10-30.** The release remains platform-limited because macOS/Metal testing is pending by the user's approved choice. The [M5 report](M5_REPORT.md) separates local Linux load checks, user-reported Ghostty success, and unmeasured hardware performance.
 
 **Goal:** package three manual-install `.glsl` variants with validated compact fallback and straightforward documentation.
 
 **Gate acceptance:**
 
 - [x] Three prebuilt shader variants created and reproducible.
-- [ ] Full → smaller full → pet-only → hidden transition tested in resized panes.
-- [ ] Multiple split panes show independent corgis, and inactive panes settle appropriately when rendered.
+- [x] Full → smaller full → pet-only → hidden transition accepted by the user after the M5 checklist; an itemized test log was not supplied.
+- [x] Multiple split panes and inactive-pane behavior accepted by the user after the M5 checklist; an itemized test log was not supplied.
 - [x] README describes manual install, safe removal, preset switching and limitations.
 - [x] No runtime dependency other than Ghostty; no installer or hidden helper process.
-- [ ] macOS (including HiDPI) and Linux tested with recorded Ghostty/backend information, or release accurately labeled as partially validated.
-- [ ] Terminal remains responsive during typing, scrollback, split-pane use and normal editing; comparative resource usage measured.
+- [x] Release accurately labeled as platform-limited; macOS/Metal remains untested and the user's manual-test platform was not recorded.
+- [x] User reports M5 works well after the responsiveness checklist; one constrained local M4/M5 CPU/RSS comparison was recorded. Hardware GPU frame cost remains unmeasured.
 - [x] Broken shader recovery documented, and build/test commands succeed from clean checkout.
 
 ## Required test matrix

@@ -1,6 +1,6 @@
 # M5 release candidate — installation and validation
 
-The three standalone shaders are [small](../dist/corgi-backyard-small.glsl), [medium](../dist/corgi-backyard-medium.glsl), and [large](../dist/corgi-backyard-large.glsl). They contain the pet, backyard, animation, and visibility data; Ghostty needs no Python, PNG, JSON, service, installer, or network connection at runtime. **Linux Ghostty shader loading has been checked locally. macOS/Metal and the responsive visual behavior still require manual testing.** See the [M5 report](M5_REPORT.md) before treating this as a cross-platform release.
+The three standalone shaders are [small](../dist/corgi-backyard-small.glsl), [medium](../dist/corgi-backyard-medium.glsl), and [large](../dist/corgi-backyard-large.glsl). They contain the pet, backyard, animation, and visibility data; Ghostty needs no Python, PNG, JSON, service, installer, or network connection at runtime. **The user approved M5 after reporting that it works well in Ghostty; the test platform and detailed measurements were not supplied. Linux shader loading was checked locally. macOS/Metal remains untested.** See the [M5 report](M5_REPORT.md) for the evidence limits.
 
 ## Choose a size
 

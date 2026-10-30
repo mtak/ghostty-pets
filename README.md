@@ -2,7 +2,7 @@
 
 A tiny autonomous pixel-art pet living inside Ghostty, drawn by a self-contained GLSL post-processing shader.
 
-**Status:** M1–M4 approved; M5 release candidate awaits visual validation. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Linux Ghostty loading has been checked; macOS/Metal testing is pending.
+**Status:** M1–M5 approved; release remains platform-limited while macOS/Metal testing is pending. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. The user reports that M5 works well in Ghostty; the test platform and detailed measurements were not supplied.
 
 ## Start here
 
