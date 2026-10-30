@@ -65,7 +65,7 @@
 
 ## M4 — Corgi and living backyard
 
-**Status: IMPLEMENTED, awaiting human visual validation and approval.** The [M4 report](M4_REPORT.md) records automated checks, Linux compilation evidence, source-art previews, remaining performance/visual risks, and an exact manual checklist. M5 has not started.
+**Status: COMPLETED — approved by the user on 2026-10-30.** The [M4 report](M4_REPORT.md) records automated checks, Linux compilation evidence, user visual feedback and approval, source-art previews, and remaining performance/platform limits. M5 has not started.
 
 **Goal:** replace placeholders with release-quality art and coherent pet/environment interactions.
 
@@ -73,12 +73,12 @@
 
 **Gate acceptance:**
 
-- [ ] Corgi is recognizably tricolor and moves with a corgi-like short-legged waddle.
-- [ ] Most time is calm; occasional activities are coherent rather than random frame changes.
-- [ ] Ground and scenery share a consistent fixed palette with transparent background.
-- [ ] Ball motion is linked to the corgi interaction; no teleport in ordinary playback.
-- [ ] Environmental animation remains low intensity without cursor-driven mode changes (ADR-0011).
-- [ ] New pet/environment could be added by source assets and manifests without rewriting core renderer (demonstrate with a simple dummy asset, not a second finished pet).
+- [x] Corgi is recognizably tricolor and moves with a corgi-like short-legged waddle.
+- [x] Most time is calm; occasional activities are coherent rather than random frame changes.
+- [x] Ground and scenery share a consistent fixed palette with transparent background.
+- [x] Ball motion is linked to the corgi interaction; no teleport in ordinary playback.
+- [x] Environmental animation remains low intensity without cursor-driven mode changes (ADR-0011).
+- [x] New pet/environment could be added by source assets and manifests without rewriting core renderer (demonstrate with a simple dummy asset, not a second finished pet).
 
 ## M5 — Responsive layouts, performance, and release
 
