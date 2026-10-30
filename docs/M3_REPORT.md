@@ -1,6 +1,6 @@
 # M3 — animation and behavior engine
 
-- **Status:** PARTIAL — implementation and automated checks pass; manual animation, focus, readability, and runtime performance validation remain.
+- **Status:** APPROVED by the user on 30 October 2026, with the untested cases below retained.
 - **Branch/worktree:** `codex/m3-animation` in `.worktrees/m3`.
 - **Scope:** versioned pet/scene metadata, validated PNG sprite sheet, deterministic stateless episodes, variable animation clips, focus-aware sleep/wake, horizontal travel, preserved M2 localized visibility, and standalone GLSL. The art and empty stage are intentional M3 placeholders.
 
@@ -55,4 +55,4 @@ On macOS Ghostty/Metal, record version, Apple hardware, display scale, and shade
 
 **Untested:** manual animation, split-pane focus redraw, visual M2 compatibility during motion, reliable Linux GPU/frame timing, and all macOS runtime/performance behavior.
 
-**Stop: awaiting human M3 validation and approval. M4 has not started.**
+**Gate: M3 approved by the user. M4 has not started; its scope and verification plan must be presented before implementation.**

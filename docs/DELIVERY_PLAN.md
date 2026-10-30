@@ -46,7 +46,7 @@
 
 ## M3 — Animation and behavior engine
 
-**Status: IMPLEMENTED, awaiting manual Ghostty validation and approval.** The [M3 report](M3_REPORT.md) records automated/Linux shader compilation evidence and an exact human checklist. [ADR-0011](adr/0011-input-independent-behavior.md) records the user's approved replacement of cursor-driven behavior with an input-independent timeline; focus still controls sleep/wake. macOS performance validation moves to M5 by a separate approved scope exception.
+**Status: COMPLETED and approved.** The user approved M3 on 30 October 2026. The [M3 report](M3_REPORT.md) records automated/Linux shader compilation evidence, user feedback, and untested visual/performance cases. [ADR-0011](adr/0011-input-independent-behavior.md) records the approved input-independent timeline; focus still controls sleep/wake. macOS performance validation moves to M5 by a separate approved scope exception.
 
 **Goal:** establish a reproducible, extensible timeline/animation layer with **placeholder** art.
 
