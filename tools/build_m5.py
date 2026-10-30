@@ -138,7 +138,8 @@ def generate(pet_path: Path, scene_path: Path, max_scale: int) -> str:
         pet_path.read_bytes() + pet.sheet.read_bytes() + scene_path.read_bytes()
         + b"".join(layer.file.read_bytes() for layer in scene.layers)
     ).hexdigest()
-    header = (f"// Ghostty Pets M5 responsive release v1\n"
+    header = ("// SPDX-License-Identifier: GPL-3.0-or-later\n"
+              f"// Ghostty Pets M5 responsive release v1\n"
               f"// Source SHA-256: {fingerprint}; pet: {pet.name}; scene: {scene.name}; max scale: {max_scale}x\n")
     shader = header + _definitions(pet, scene, max_scale) + "\n" + SHADER_CORE + RESPONSIVE_MAIN
     if len(shader.encode("utf-8")) > 128 * 1024:

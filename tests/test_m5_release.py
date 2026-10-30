@@ -81,6 +81,7 @@ class M5ReleaseTests(unittest.TestCase):
             artifact = ROOT / "dist" / f"corgi-backyard-{preset}.glsl"
             self.assertEqual(artifact.read_text(encoding="utf-8"), built)
             self.assertLess(len(built.encode("utf-8")), 128 * 1024)
+            self.assertTrue(built.startswith("// SPDX-License-Identifier: GPL-3.0-or-later\n"))
             self.assertEqual(built.count("void mainImage("), 1)
             self.assertNotIn("iFrame", built)
             self.assertIn("Source SHA-256:", built)

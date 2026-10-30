@@ -51,6 +51,8 @@ python3 tools/build_m5.py --pet /path/to/pet.json --scene /path/to/scene.json --
 
 The source paths are build inputs only. Generated GLSL files are release artifacts, not hand-edited source.
 
+The project-authored source, artwork, documentation, and generated release shaders are distributed under [GNU GPL version 3 or later](../LICENSE). Each M5 release shader embeds the `GPL-3.0-or-later` SPDX identifier so the license remains clear when the single file is copied elsewhere.
+
 ## Known limitations
 
 - Text protection estimates occupancy from terminal image colors. It can miss text or fade scenery unnecessarily, especially with selections, ANSI colors, graphics, or a chained shader. It is not a semantic text mask.

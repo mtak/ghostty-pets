@@ -1,96 +1,60 @@
 # Ghostty Pets 🐕
 
-A tiny autonomous pixel-art pet living inside Ghostty, drawn by a self-contained GLSL post-processing shader.
+**A pixel-art corgi and backyard living inside your Ghostty terminal.** One self-contained GLSL shader draws the scene over the terminal without a daemon, plugin, installer, or runtime image files.
 
-**Status:** M1–M5 approved; release remains platform-limited while macOS/Metal testing is pending. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. The user reports that M5 works well in Ghostty; the test platform and detailed measurements were not supplied.
+![Ghostty Pets medium preset in a Linux Ghostty window with sample terminal text](docs/evidence/release/ghostty-pets-medium-linux.png)
 
-## Start here
+*Actual Ghostty capture of the medium preset on Linux. The terminal text was scripted for the demo; [capture details](docs/evidence/release/CAPTURE.md).*
 
-1. Read `docs/PRODUCT_SPEC.md` for what to build.
-2. Read `docs/ARCHITECTURE.md` and `docs/adr/` for how and why.
-3. Read `docs/DELIVERY_PLAN.md` for phased validation and acceptance gates.
-4. Open Codex in this repository; `AGENTS.md` constrains how the agent should proceed.
-5. Use the prompt in `CODEX_START.md`. **Do not start with the complete feature set.**
+**Release status:** All five milestones are approved. Linux Ghostty shader loading and user-reported behavior have been checked; macOS/Metal is **not yet tested**. See the [M5 evidence report](docs/M5_REPORT.md) for the exact limits.
 
-The intended end-user installation is manual: copy one prebuilt `.glsl` file to the Ghostty config directory and add the `custom-shader` setting. Python is a build-time dependency only.
+## Try it
 
-## M1 proof build and preview
-
-The current artifacts are a static silhouette for testing the rendering path, not the v1 pet. With Python 3.10+ and Pillow 12.1.1 installed from `requirements-build.txt`:
+From the repository root on Linux, open a Ghostty window with the medium shader:
 
 ```sh
-python3 tools/build_m1.py --scale 1 --output dist/m1-corgi-1x.glsl
-python3 tools/build_m1.py --scale 2 --output dist/m1-corgi-2x.glsl
-python3 -m unittest discover -s tests -v
+ghostty --config-default-files=false --custom-shader="$(realpath dist/corgi-backyard-medium.glsl)" --custom-shader-animation=true
 ```
 
-To preview one file, add these lines to a test Ghostty config, using the **absolute path** to the chosen shader on your machine:
+Ghostty's [configuration options](https://ghostty.org/docs/config/reference) also work as command-line flags. This preview leaves your config file alone.
 
-```ini
-custom-shader = /absolute/path/to/ghostty-pets/dist/m1-corgi-2x.glsl
-custom-shader-animation = true
-```
+## Install manually
 
-Remove the `custom-shader` line and reload or restart Ghostty to disable the proof. See [M1 report](docs/M1_REPORT.md) for validation results, limitations, and the Linux/macOS test checklist. The PNG source is `assets/pets/corgi/m1-silhouette.png`; opaque colors are indexed in first-appearance order, transparent pixels use index zero, and eight four-bit indices are packed into each GLSL `uint`. This encoding is provisional until broader compiler and color tests.
+1. Choose one standalone shader: [small](dist/corgi-backyard-small.glsl), [medium](dist/corgi-backyard-medium.glsl), or [large](dist/corgi-backyard-large.glsl). Medium is the starting choice.
+2. Copy it to a directory you control, such as `~/.config/ghostty/shaders/` on Linux. Open your Ghostty config and add the **absolute path** to that copy:
 
-## M2 visibility proof
+   ```ini
+   custom-shader = /absolute/path/to/corgi-backyard-medium.glsl
+   custom-shader-animation = true
+   ```
 
-M2 uses the same placeholder sprite and leaves the M1 artifacts byte-identical. Build the 1× or 2× conservative text-aware proof with:
+3. Reload Ghostty or restart it. Switch presets by changing the path. To disable Ghostty Pets or recover from a bad shader, remove the `custom-shader` line and reload/restart.
+
+The [installation and recovery guide](docs/M5_RELEASE.md) gives Linux and macOS config locations, reload keys, source build steps, and troubleshooting. Python and Pillow are needed only to build shaders from editable source.
+
+## What it does
+
+| Feature | Behavior |
+|---|---|
+| Animated corgi | Complete, time-driven activities including walking, play, rest, and sleep. Typing does not reset the animation. |
+| Living backyard | Transparent grass, tree, doghouse, flowers, butterfly, falling leaf, and a ball synchronized with play. |
+| Readability | Nearby terminal-cursor and likely-text regions fade locally. Text detection is heuristic, not guaranteed. |
+| Responsive presets | Each file caps the integer pixel scale at 1×, 2×, or 3×. Small panes fall back to a smaller complete scene, a stationary corgi, then no overlay. |
+| Per-pane focus | Unfocused panes select an upright doze when Ghostty redraws them; they may keep an earlier frame until then. |
+
+## Build from source
+
+The source art is editable PNG; pet animations and the backyard are defined by validated JSON metadata. The Python builder produces all three standalone release files reproducibly:
 
 ```sh
-python3 tools/build_m2.py --scale 2 --policy conservative --output dist/m2-corgi-2x-conservative.glsl
-python3 -m unittest discover -s tests -v
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-build.txt
+.venv/bin/python tools/build_m5.py --output-dir dist
+.venv/bin/python -m unittest discover -s tests -v
 ```
 
-Choose the M2 file in the `custom-shader` config line above to preview it. The `cursor-only` policy is a comparison build: `python3 tools/build_m2.py --scale 2 --policy cursor-only --output dist/m2-corgi-2x-cursor-only.glsl`. It removes text detection and is **not** an accepted replacement for text-aware protection. See the [M2 report](docs/M2_REPORT.md) for observed behavior and remaining tests.
+See the [pet format](docs/M3_FORMAT.md), [backyard format](docs/M4_FORMAT.md), and [architecture](docs/ARCHITECTURE.md) to add or change assets. The [delivery plan](docs/DELIVERY_PLAN.md), [milestone reports](docs/M5_REPORT.md), and [ADRs](docs/adr/) preserve the implementation history. Earlier M1–M4 proof builders and shaders remain in `tools/` and `dist/` for reproducibility.
 
-## M3 animation prototype
+## License
 
-M3 adds a small placeholder sprite sheet and versioned pet/environment JSON definitions. The generated 2× shader is a standalone preview of timed clips, horizontal movement, focus-aware sleep/wake, and the M2 text/cursor fading policy. Cursor input does not change the animation timeline. It is not final corgi art or the backyard.
-
-```sh
-python3 tools/build_m3.py --output dist/m3-placeholder-2x.glsl
-python3 -m unittest discover -s tests -v
-```
-
-Set `custom-shader` to the absolute path of `dist/m3-placeholder-2x.glsl` and keep `custom-shader-animation = true`. Remove the line and reload/restart Ghostty to disable it. See the [M3 format](docs/M3_FORMAT.md) for editable source fields and the [M3 report](docs/M3_REPORT.md) for the manual validation checklist and current limits.
-
-## M4 corgi and backyard preview
-
-M4 adds editable tricolor corgi frames and a layered backyard with doghouse, tree, flowers, grass, leaf, butterfly, and a tennis ball synchronized to the pet's play episode. Unfocused panes select an upright doze pose. The 2× shader is the approved M4 review artifact; the M5 release candidates below add responsive sizing.
-
-```sh
-python3 tools/make_m4_art.py
-python3 tools/build_m4.py --output dist/m4-corgi-backyard-2x.glsl
-python3 -m unittest discover -s tests -v
-```
-
-Preview with `custom-shader = /absolute/path/to/ghostty-pets/dist/m4-corgi-backyard-2x.glsl` and `custom-shader-animation = true`. [Source-art preview](docs/evidence/m4/source-preview.png), [focus preview](docs/evidence/m4/focus-preview.png), [animation contact sheet](docs/evidence/m4/animation-contact-sheet.png), [format](docs/M4_FORMAT.md), and [milestone report](docs/M4_REPORT.md) document what to review. Removing `custom-shader` safely disables the overlay.
-
-## M5 responsive release candidate
-
-The three standalone presets are [`small`](dist/corgi-backyard-small.glsl), [`medium`](dist/corgi-backyard-medium.glsl), and [`large`](dist/corgi-backyard-large.glsl). They choose the largest fitting integer-scale backyard up to their preset cap, then a stationary pet-only layout, then hide in very small panes. Start with medium. Copy one file to a directory you control and put its **absolute path** in your Ghostty config:
-
-```ini
-custom-shader = /absolute/path/to/corgi-backyard-medium.glsl
-custom-shader-animation = true
-```
-
-Switch presets by changing that path. Disable or recover from a broken shader by removing the `custom-shader` line and reloading/restarting Ghostty. See the [manual install, build, and limitations guide](docs/M5_RELEASE.md) and [M5 evidence report](docs/M5_REPORT.md) for platform-specific paths and exact tests. Python and Pillow are build-time tools only.
-
-## Documentation
-
-- [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md) — frozen product scope, functional requirements, UX and non-goals.
-- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — shader constraints, proposed architecture, asset format and algorithms.
-- [`docs/DELIVERY_PLAN.md`](docs/DELIVERY_PLAN.md) — M1–M5 milestones, test matrices, review gates and release criteria.
-- [`docs/M3_FORMAT.md`](docs/M3_FORMAT.md) — versioned M3 pet/scene source format.
-- [`docs/M4_FORMAT.md`](docs/M4_FORMAT.md) — M4 pet and layered backyard source format.
-- [`docs/M5_RELEASE.md`](docs/M5_RELEASE.md) — release candidate install, recovery, presets, source build, and limitations.
-- [`docs/adr/`](docs/adr/) — independently reviewable architecture decisions.
-
-## Authoritative references
-
-- Ghostty custom shaders and their uniforms: https://ghostty.org/docs/config/reference
-- Ghostty config file locations and reload behavior: https://ghostty.org/docs/config
-
-Technical assumptions must be rechecked against the **installed Ghostty version**, not only the online docs.
+Project-authored code, art, documentation, and generated shaders are licensed under **GNU GPL version 3 or later** (`GPL-3.0-or-later`). See [LICENSE](LICENSE).

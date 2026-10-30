@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Ghostty Pets M5 responsive release v1
 // Source SHA-256: 5015ed3e005d78b7c4115d8220f7dedc41894970a7ca4781711aff8c954ecee6; pet: tricolor-corgi; scene: cozy-backyard; max scale: 1x
 const int M4_PET_WIDTH = 28;
