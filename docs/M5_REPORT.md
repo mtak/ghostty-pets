@@ -27,7 +27,7 @@
   | M5 medium | 15.63 s | 0.87 s | 7.73 s | 328,688 KiB |
 
   M5 medium was close to M4 in this one constrained run. The high shader-on CPU totals and EGL fallback prevent a claim of acceptable hardware GPU cost. Rendering FPS, frame latency, typing latency, battery use, and three-pane resource impact are **unmeasured**.
-- `git diff --check`: pass. A clean-checkout rebuild/test check remains to be recorded after the candidate commit.
+- `git diff --check`: pass. After candidate commit `68f31ff`, a temporary clean checkout made with `git archive HEAD` ran all **28 tests** and rebuilt all three release shaders **byte for byte** against the committed files. This used the host's installed Python/Pillow; a fresh virtualenv dependency install was not separately tested.
 
 ## Exact Linux Ghostty visual checklist
 
@@ -54,6 +54,6 @@ On a macOS Ghostty build, record the version, Apple hardware, Metal backend, Ret
 
 **Inferred:** dynamic layout selection should use little extra GPU work because it checks at most three scales before the same M4 decoder; this is not established by frame-time data. The pure Python layout model and GLSL are intentionally parallel implementations, so actual responsive transitions require Ghostty observation.
 
-**Untested:** visual layout switching, pet-only appearance and readability, split-pane independence in M5, hardware GPU frame cost and typing latency, macOS/Metal/HiDPI behavior, and clean-checkout release verification until recorded below.
+**Untested:** visual layout switching, pet-only appearance and readability, split-pane independence in M5, hardware GPU frame cost and typing latency, macOS/Metal/HiDPI behavior, and a fresh dependency install.
 
 **Stop: awaiting human M5 visual/performance validation and approval. No broader release claim is made.**

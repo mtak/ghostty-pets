@@ -95,7 +95,7 @@
 - [x] No runtime dependency other than Ghostty; no installer or hidden helper process.
 - [ ] macOS (including HiDPI) and Linux tested with recorded Ghostty/backend information, or release accurately labeled as partially validated.
 - [ ] Terminal remains responsive during typing, scrollback, split-pane use and normal editing; comparative resource usage measured.
-- [ ] Broken shader recovery documented, and build/test commands succeed from clean checkout.
+- [x] Broken shader recovery documented, and build/test commands succeed from clean checkout.
 
 ## Required test matrix
 
