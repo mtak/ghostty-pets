@@ -72,6 +72,8 @@ Generated files must carry a generator version and source-content fingerprint, n
 
 **M4 extension:** [ADR-0012](adr/0012-layered-m4-scene.md) adds scene schema 3 with ordered PNG layers, bounded periodic ambient paths, and one interactive object whose horizontal motion is evaluated alongside the pet episode. [ADR-0013](adr/0013-unfocused-doze-pose.md) adds a scene-selected unfocused clip after visual feedback. `docs/M4_FORMAT.md` documents the current source fields. This extends the M3 empty-stage schema while keeping all previous builders and shaders intact.
 
+**M5 release layout:** [ADR-0014](adr/0014-responsive-release-layout.md) adds a bounded integer-scale selector around the M4 renderer. Three standalone artifacts cap the scale at 1, 2, or 3; a full scene takes priority, followed by a stationary pet-only fallback and then an unchanged terminal image. The M4 proof shader and prior artifacts remain byte-identical.
+
 **PNG:** support sprite sheets with discrete frames on a regular grid; RGBA, consistent frame size per animation, only fully transparent or fully opaque pixels in v1 unless edge behavior is explicitly approved; no automatic blurry resizing. Transparent pixels must not be rendered into the terminal background.
 
 **JSON:** validated with a versioned schema. The following illustrates design intent, not a finalized API:

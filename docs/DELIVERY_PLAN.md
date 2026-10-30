@@ -65,7 +65,7 @@
 
 ## M4 — Corgi and living backyard
 
-**Status: COMPLETED — approved by the user on 2026-10-30.** The [M4 report](M4_REPORT.md) records automated checks, Linux compilation evidence, user visual feedback and approval, source-art previews, and remaining performance/platform limits. M5 has not started.
+**Status: COMPLETED — approved by the user on 2026-10-30.** The [M4 report](M4_REPORT.md) records automated checks, Linux compilation evidence, user visual feedback and approval, source-art previews, and remaining performance/platform limits. M5 is tracked below.
 
 **Goal:** replace placeholders with release-quality art and coherent pet/environment interactions.
 
@@ -82,15 +82,17 @@
 
 ## M5 — Responsive layouts, performance, and release
 
+**Status: IMPLEMENTED as a Linux-load-checked release candidate, awaiting human responsive-layout and performance validation.** macOS/Metal testing is pending by the user's approved platform-label choice. The [M5 report](M5_REPORT.md) records checks and an exact Linux/macOS checklist.
+
 **Goal:** package three manual-install `.glsl` variants with validated compact fallback and straightforward documentation.
 
 **Gate acceptance:**
 
-- [ ] Three prebuilt shader variants created and reproducible.
+- [x] Three prebuilt shader variants created and reproducible.
 - [ ] Full → smaller full → pet-only → hidden transition tested in resized panes.
 - [ ] Multiple split panes show independent corgis, and inactive panes settle appropriately when rendered.
-- [ ] README describes manual install, safe removal, preset switching and limitations.
-- [ ] No runtime dependency other than Ghostty; no installer or hidden helper process.
+- [x] README describes manual install, safe removal, preset switching and limitations.
+- [x] No runtime dependency other than Ghostty; no installer or hidden helper process.
 - [ ] macOS (including HiDPI) and Linux tested with recorded Ghostty/backend information, or release accurately labeled as partially validated.
 - [ ] Terminal remains responsive during typing, scrollback, split-pane use and normal editing; comparative resource usage measured.
 - [ ] Broken shader recovery documented, and build/test commands succeed from clean checkout.

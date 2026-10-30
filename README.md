@@ -2,7 +2,7 @@
 
 A tiny autonomous pixel-art pet living inside Ghostty, drawn by a self-contained GLSL post-processing shader.
 
-**Status:** M1–M4 approved; M5 has not started. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
+**Status:** M1–M4 approved; M5 release candidate awaits visual validation. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Linux Ghostty loading has been checked; macOS/Metal testing is pending.
 
 ## Start here
 
@@ -57,7 +57,7 @@ Set `custom-shader` to the absolute path of `dist/m3-placeholder-2x.glsl` and ke
 
 ## M4 corgi and backyard preview
 
-M4 adds editable tricolor corgi frames and a layered backyard with doghouse, tree, flowers, grass, leaf, butterfly, and a tennis ball synchronized to the pet's play episode. Unfocused panes select an upright doze pose. The 2× shader is an M4 review artifact; M5 will make the final responsive size variants.
+M4 adds editable tricolor corgi frames and a layered backyard with doghouse, tree, flowers, grass, leaf, butterfly, and a tennis ball synchronized to the pet's play episode. Unfocused panes select an upright doze pose. The 2× shader is the approved M4 review artifact; the M5 release candidates below add responsive sizing.
 
 ```sh
 python3 tools/make_m4_art.py
@@ -67,6 +67,17 @@ python3 -m unittest discover -s tests -v
 
 Preview with `custom-shader = /absolute/path/to/ghostty-pets/dist/m4-corgi-backyard-2x.glsl` and `custom-shader-animation = true`. [Source-art preview](docs/evidence/m4/source-preview.png), [focus preview](docs/evidence/m4/focus-preview.png), [animation contact sheet](docs/evidence/m4/animation-contact-sheet.png), [format](docs/M4_FORMAT.md), and [milestone report](docs/M4_REPORT.md) document what to review. Removing `custom-shader` safely disables the overlay.
 
+## M5 responsive release candidate
+
+The three standalone presets are [`small`](dist/corgi-backyard-small.glsl), [`medium`](dist/corgi-backyard-medium.glsl), and [`large`](dist/corgi-backyard-large.glsl). They choose the largest fitting integer-scale backyard up to their preset cap, then a stationary pet-only layout, then hide in very small panes. Start with medium. Copy one file to a directory you control and put its **absolute path** in your Ghostty config:
+
+```ini
+custom-shader = /absolute/path/to/corgi-backyard-medium.glsl
+custom-shader-animation = true
+```
+
+Switch presets by changing that path. Disable or recover from a broken shader by removing the `custom-shader` line and reloading/restarting Ghostty. See the [manual install, build, and limitations guide](docs/M5_RELEASE.md) and [M5 evidence report](docs/M5_REPORT.md) for platform-specific paths and exact tests. Python and Pillow are build-time tools only.
+
 ## Documentation
 
 - [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md) — frozen product scope, functional requirements, UX and non-goals.
@@ -74,6 +85,7 @@ Preview with `custom-shader = /absolute/path/to/ghostty-pets/dist/m4-corgi-backy
 - [`docs/DELIVERY_PLAN.md`](docs/DELIVERY_PLAN.md) — M1–M5 milestones, test matrices, review gates and release criteria.
 - [`docs/M3_FORMAT.md`](docs/M3_FORMAT.md) — versioned M3 pet/scene source format.
 - [`docs/M4_FORMAT.md`](docs/M4_FORMAT.md) — M4 pet and layered backyard source format.
+- [`docs/M5_RELEASE.md`](docs/M5_RELEASE.md) — release candidate install, recovery, presets, source build, and limitations.
 - [`docs/adr/`](docs/adr/) — independently reviewable architecture decisions.
 
 ## Authoritative references
