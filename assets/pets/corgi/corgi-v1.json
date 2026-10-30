@@ -17,6 +17,7 @@
     "wake": {"row": 9, "durations_ms": [200, 200, 200, 200], "loop": false, "speed": 1.0},
     "scratch": {"row": 10, "durations_ms": [230, 230, 230, 230], "loop": true, "speed": 1.0},
     "happy": {"row": 11, "durations_ms": [180, 180, 180, 180], "loop": true, "speed": 1.0},
-    "blink": {"row": 12, "durations_ms": [200, 100, 100, 200], "loop": false, "speed": 1.0}
+    "blink": {"row": 12, "durations_ms": [200, 100, 100, 200], "loop": false, "speed": 1.0},
+    "doze": {"row": 13, "durations_ms": [900, 900, 900, 900], "loop": true, "speed": 1.0}
   }
 }

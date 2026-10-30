@@ -19,13 +19,13 @@ else:
 OUTPUT = ROOT / "docs/evidence/m4"
 
 
-def scene_at(time_s: float, background: tuple[int, int, int]) -> Image.Image:
+def scene_at(time_s: float, background: tuple[int, int, int], focused: bool = True) -> Image.Image:
     pet = load_pet(DEFAULT_PET)
     scene = load_scene(DEFAULT_SCENE, pet)
-    pose = evaluate(scene, pet, time_s, 0, True)
+    pose = evaluate(scene, pet, time_s, 0, focused)
     image = Image.new("RGBA", (scene.width, scene.height), (*background, 255))
     for layer in scene.layers:
-        state = layer_state(layer, time_s, True, pose.object_x)
+        state = layer_state(layer, time_s, focused, pose.object_x)
         if not state.visible:
             continue
         with Image.open(layer.file) as sheet:
@@ -81,10 +81,24 @@ def contact_sheet() -> Image.Image:
     return result
 
 
+def focus_preview() -> Image.Image:
+    scale = 5
+    width, height = 110 * scale, 45 * scale
+    result = Image.new("RGB", (width * 2, height + 18), (24, 23, 31))
+    draw = ImageDraw.Draw(result)
+    for index, (focused, label) in enumerate(((True, "focused: breathing"), (False, "unfocused: upright doze"))):
+        x = index * width
+        draw.text((x + 4, 3), label, fill=(245, 236, 216), font=ImageFont.load_default())
+        panel = scene_at(12.5, (30, 30, 46), focused).convert("RGB").resize((width, height), Image.Resampling.NEAREST)
+        result.paste(panel, (x, 18))
+    return result
+
+
 def main() -> None:
     OUTPUT.mkdir(parents=True, exist_ok=True)
     montage().save(OUTPUT / "source-preview.png")
     contact_sheet().save(OUTPUT / "animation-contact-sheet.png")
+    focus_preview().save(OUTPUT / "focus-preview.png")
 
 
 if __name__ == "__main__":

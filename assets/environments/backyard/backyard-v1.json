@@ -7,6 +7,7 @@
   "inset": 12,
   "seed": 5,
   "slot_ms": 12000,
+  "unfocused_clip": "doze",
   "layers": [
     {"id": "ground", "file": "ground.png", "frame_size": [110, 7], "durations_ms": [1000], "motion": "static", "position": [0, 0]},
     {"id": "tree-trunk", "file": "tree-trunk.png", "frame_size": [14, 26], "durations_ms": [1000], "motion": "static", "position": [6, 7]},

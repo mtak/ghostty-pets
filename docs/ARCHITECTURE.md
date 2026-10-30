@@ -70,7 +70,7 @@ Generated files must carry a generator version and source-content fingerprint, n
 
 ## 4. Source asset and data model
 
-**M4 extension:** [ADR-0012](adr/0012-layered-m4-scene.md) adds scene schema 3 with ordered PNG layers, bounded periodic ambient paths, and one interactive object whose horizontal motion is evaluated alongside the pet episode. `docs/M4_FORMAT.md` documents the current source fields. This extends the M3 empty-stage schema while keeping all previous builders and shaders intact.
+**M4 extension:** [ADR-0012](adr/0012-layered-m4-scene.md) adds scene schema 3 with ordered PNG layers, bounded periodic ambient paths, and one interactive object whose horizontal motion is evaluated alongside the pet episode. [ADR-0013](adr/0013-unfocused-doze-pose.md) adds a scene-selected unfocused clip after visual feedback. `docs/M4_FORMAT.md` documents the current source fields. This extends the M3 empty-stage schema while keeping all previous builders and shaders intact.
 
 **PNG:** support sprite sheets with discrete frames on a regular grid; RGBA, consistent frame size per animation, only fully transparent or fully opaque pixels in v1 unless edge behavior is explicitly approved; no automatic blurry resizing. Transparent pixels must not be rendered into the terminal background.
 

@@ -57,6 +57,7 @@ class Scene4:
     inset: int
     seed: int
     slot_ms: int
+    unfocused_clip: str
     layers: tuple[Layer, ...]
     interactive_index: int
     palette: tuple[tuple[int, int, int], ...]
@@ -190,6 +191,9 @@ def load_scene(path: Path, pet: Pet) -> Scene4:
     clips = {clip.name for clip in pet.clips}
     if not {"idle", "sleep", "wake"} <= clips:
         raise ValueError("idle, sleep and wake clips are required")
+    unfocused_clip = data.get("unfocused_clip")
+    if not isinstance(unfocused_clip, str) or unfocused_clip not in clips:
+        raise ValueError("unfocused_clip must reference a pet clip")
     episodes_data = data.get("episodes")
     if not isinstance(episodes_data, list) or not 1 <= len(episodes_data) <= 32:
         raise ValueError("episodes must contain 1..32 entries")
@@ -241,7 +245,7 @@ def load_scene(path: Path, pet: Pet) -> Scene4:
         if previous_pet != 0 or previous_object != 0 or total > slot_ms:
             raise ValueError(f"{episode_name}: pet and object must return home within slot")
         episodes.append(Episode4(episode_name, weight, tuple(phases)))
-    return Scene4(name, width, height, ground_y, home_x, inset, seed, slot_ms,
+    return Scene4(name, width, height, ground_y, home_x, inset, seed, slot_ms, unfocused_clip,
                   tuple(layers), interactive_index, tuple(palette), tuple(pixels), tuple(episodes))
 
 
@@ -284,7 +288,8 @@ def layer_state(layer: Layer, time_s: float, focused: bool, object_x: float = 0.
 def evaluate(scene: Scene4, pet: Pet, time_s: float, focus_s: float, focused: bool) -> Pose4:
     clips = {clip.name: clip for clip in pet.clips}
     if not focused:
-        return Pose4("sleeping", "sleep", "sleep", select_frame(clips["sleep"], time_s * 1000), 0, "right", 0, 1)
+        clip = scene.unfocused_clip
+        return Pose4("sleeping", "unfocused-rest", clip, select_frame(clips[clip], time_s * 1000), 0, "right", 0, 1)
     focus_age_ms = max(0.0, (time_s - focus_s) * 1000)
     fade = 1.0 if focus_s <= 0 else min(1.0, focus_age_ms / 650.0)
     if focus_s > 0 and focus_age_ms < 650:

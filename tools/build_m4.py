@@ -125,8 +125,8 @@ def _definitions(pet: Pet, scene: Scene4, scale: int) -> str:
         f"const int M4_SLOT_MS = {scene.slot_ms};",
         f"const uint M4_SEED = {scene.seed}u;",
         f"const int M4_IDLE = {clip_ids['idle']};",
-        f"const int M4_SLEEP = {clip_ids['sleep']};",
         f"const int M4_WAKE = {clip_ids['wake']};",
+        f"const int M4_UNFOCUSED = {clip_ids[scene.unfocused_clip]};",
         f"const int M4_LAYER_COUNT = {len(scene.layers)};",
         _array("int", "M4_CLIP_START", clip_starts),
         _array("int", "M4_CLIP_COUNT", clip_counts),
@@ -204,7 +204,7 @@ int m4PetFrame(int clip, float elapsedMs) {
 
 void m4Pose(out int clip, out float clipMs, out float petX,
             out int flip, out float objectX, out float fade) {
-    clip = M4_SLEEP;
+    clip = M4_UNFOCUSED;
     clipMs = iTime * 1000.0;
     petX = 0.0;
     flip = 0;

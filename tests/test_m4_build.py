@@ -39,10 +39,19 @@ class M4BuildTests(unittest.TestCase):
     def test_animation_clips_and_layers_are_present(self) -> None:
         clips = {clip.name: clip for clip in self.pet.clips}
         self.assertTrue({"idle", "breathe", "look", "stand", "walk", "play", "sit",
-                         "stretch", "sleep", "wake", "scratch", "happy", "blink"} <= clips.keys())
+                         "stretch", "sleep", "wake", "scratch", "happy", "blink", "doze"} <= clips.keys())
         self.assertEqual(len(clips["walk"].durations_ms), 6)
         self.assertEqual(select_frame(clips["walk"], 140), 1)
         self.assertEqual(select_frame(clips["stand"], 3000), 3)
+        with Image.open(self.pet.sheet) as sheet:
+            sleep = clips["sleep"]
+            doze = clips["doze"]
+            sleep_frame = sheet.crop((0, sleep.row * self.pet.frame_height,
+                                      self.pet.frame_width, (sleep.row + 1) * self.pet.frame_height))
+            doze_frame = sheet.crop((0, doze.row * self.pet.frame_height,
+                                     self.pet.frame_width, (doze.row + 1) * self.pet.frame_height))
+        self.assertGreater(sleep_frame.getchannel("A").getbbox()[1], 10)  # prone nap
+        self.assertLess(doze_frame.getchannel("A").getbbox()[1], 8)  # upright doze
         layers = {layer.name: layer for layer in self.scene.layers}
         self.assertEqual({"ground", "tree-trunk", "tree-canopy", "doghouse", "flowers",
                           "leaf", "butterfly", "ball"}, layers.keys())
@@ -88,7 +97,8 @@ class M4BuildTests(unittest.TestCase):
         self.assertEqual(layer_state(layers["tree-canopy"], 0, True).frame, 0)
         self.assertEqual(layer_state(layers["tree-canopy"], 1.3, True).frame, 1)
         self.assertEqual(layer_state(layers["tree-canopy"], 1.3, False).frame, 0)
-        self.assertEqual(evaluate(self.scene, self.pet, 50, 0, False).clip, "sleep")
+        self.assertEqual(evaluate(self.scene, self.pet, 50, 0, False).clip, "doze")
+        self.assertEqual(evaluate(self.scene, self.pet, 87, 0, True).clip, "sleep")
         self.assertEqual(evaluate(self.scene, self.pet, 50.2, 50, True).clip, "wake")
         self.assertEqual(evaluate(self.scene, self.pet, 51, 50, True).episode, "refocus-rest")
 
@@ -156,6 +166,8 @@ class M4BuildTests(unittest.TestCase):
                 lambda d: d["layers"][5].update(to=[109, 8]),
                 lambda d: d["layers"][6].update(active_ms=61000),
                 lambda d: d["layers"][7].update(motion="path"),
+                lambda d: d.update(unfocused_clip="missing"),
+                lambda d: d.pop("unfocused_clip"),
                 lambda d: d["episodes"][6]["phases"][2].update(object_from_x=2),
                 lambda d: d["episodes"][6]["phases"][4].update(object_to_x=20),
                 lambda d: d["episodes"][6]["phases"][-1].update(object_to_x=1),

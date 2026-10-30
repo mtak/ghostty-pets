@@ -4,11 +4,11 @@ M4 keeps pet sheet schema 1 and introduces **scene schema 3** for layered enviro
 
 ## Pet
 
-`assets/pets/corgi/corgi-v1.json` points to `corgi-v1.png`. It uses the [M3 pet format](M3_FORMAT.md): 28 × 24 cells, named animation rows, 1–8 frame durations, loop policy, playback speed, and a ground anchor. The M4 sheet has 4–6 frames per clip for idle, breathing, look, stand, walk, play, sit, stretch, sleep, wake, scratch, happy, and blink. The generator deduplicates identical frame pixels before embedding them; the PNG still contains every editable frame.
+`assets/pets/corgi/corgi-v1.json` points to `corgi-v1.png`. It uses the [M3 pet format](M3_FORMAT.md): 28 × 24 cells, named animation rows, 1–8 frame durations, loop policy, playback speed, and a ground anchor. The M4 sheet has 4–6 frames per clip for idle, breathing, look, stand, walk, play, sit, stretch, sleep, wake, scratch, happy, blink, and upright doze. The generator deduplicates identical frame pixels before embedding them; the PNG still contains every editable frame.
 
 ## Environment
 
-`assets/environments/backyard/backyard-v1.json` declares a 110 × 45 source-pixel canvas, ground and home anchors, inset, deterministic seed, episode slot length, ordered `layers`, and complete `episodes`.
+`assets/environments/backyard/backyard-v1.json` declares a 110 × 45 source-pixel canvas, ground and home anchors, inset, deterministic seed, episode slot length, ordered `layers`, complete `episodes`, and a required `unfocused_clip` reference. The current scene selects the corgi's upright `doze` clip; a prone `sleep` clip remains available for scheduled naps.
 
 Each layer has a unique `id`, a same-directory RGBA `file`, `frame_size`, positive `durations_ms`, and one `motion`:
 
@@ -32,8 +32,8 @@ python3 tools/preview_m4.py
 python3 -m unittest discover -s tests -v
 ```
 
-The two art previews under `docs/evidence/m4/` show PNG source composited offline; they are **not Ghostty screenshots**. Use an absolute `custom-shader` path to the generated file and `custom-shader-animation = true` for runtime review. Remove the `custom-shader` line and reload/restart Ghostty to disable the project. M5 will supply the three release presets and responsive compact-pane fallback.
+The three art previews under `docs/evidence/m4/` show PNG source composited offline; they are **not Ghostty screenshots**. Use an absolute `custom-shader` path to the generated file and `custom-shader-animation = true` for runtime review. Remove the `custom-shader` line and reload/restart Ghostty to disable the project. M5 will supply the three release presets and responsive compact-pane fallback.
 
 ## Rendering and limits
 
-The shader samples the unchanged terminal image, returns it outside the scene, and composites ordered transparent layers followed by the pet. Each opaque scene layer has its own M2-style cursor/text fade region; the pet retains three horizontal regions at its animated position. The text detector remains heuristic. The timeline is independent of typing and uses only shader time plus focus for sleep/wake. All sprite data and palettes are embedded; no runtime PNG load or helper process is used.
+The shader samples the unchanged terminal image, returns it outside the scene, and composites ordered transparent layers followed by the pet. Each opaque scene layer has its own M2-style cursor/text fade region; the pet retains three horizontal regions at its animated position. The text detector remains heuristic. The timeline is independent of typing; focus selects the scene's unfocused clip and a wake transition on return. Ghostty does not provide a focus-loss timestamp, so that pose switch can still be immediate on a rendered frame. All sprite data and palettes are embedded; no runtime PNG load or helper process is used.

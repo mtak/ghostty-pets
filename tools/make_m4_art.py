@@ -34,7 +34,7 @@ GRASS_DARK = (49, 105, 66, 255)
 LEAF = (122, 169, 84, 255)
 FLOWER = (246, 217, 122, 255)
 BLUE = (112, 181, 197, 255)
-BALL = (218, 110, 91, 255)
+BALL = (199, 225, 82, 255)  # classic yellow-green tennis felt
 
 
 def _image(width: int, height: int) -> Image.Image:
@@ -46,22 +46,25 @@ def _standing(frame: int, pose: str) -> Image.Image:
     d = ImageDraw.Draw(image)
     bob = (0, -1, 0, 1, 0, -1)[frame % 6] if pose == "walk" else (1 if pose == "breathe" and frame == 1 else 0)
     tail_y = 10 + (frame % 2 if pose in ("walk", "happy", "play") else 0)
-    d.rectangle((1, tail_y, 5, tail_y + 2), fill=O)
-    d.rectangle((2, tail_y, 5, tail_y + 1), fill=K)
-    d.rectangle((4, 9 + bob, 20, 18 + bob), fill=O)
-    d.rectangle((5, 10 + bob, 19, 17 + bob), fill=T)
-    d.rectangle((6, 10 + bob, 16, 13 + bob), fill=K)
-    d.rectangle((7, 10 + bob, 14, 11 + bob), fill=KH)
-    d.rectangle((10, 16 + bob, 18, 17 + bob), fill=W)
-    d.rectangle((6, 14 + bob, 9, 16 + bob), fill=TH)
+    d.rectangle((4, tail_y, 8, tail_y + 2), fill=O)
+    d.rectangle((5, tail_y, 8, tail_y + 1), fill=K)
+    # Rounded haunch and deeper chest replace the long rectangular torso.
+    d.ellipse((6, 9 + bob, 18, 19 + bob), fill=O)
+    d.rectangle((12, 9 + bob, 20, 18 + bob), fill=O)
+    d.ellipse((7, 10 + bob, 17, 18 + bob), fill=T)
+    d.rectangle((13, 10 + bob, 19, 17 + bob), fill=T)
+    d.polygon(((8, 10 + bob), (16, 9 + bob), (19, 13 + bob), (15, 15 + bob), (7, 14 + bob)), fill=K)
+    d.rectangle((9, 10 + bob, 15, 11 + bob), fill=KH)
+    d.rectangle((12, 16 + bob, 19, 18 + bob), fill=W)
+    d.rectangle((8, 15 + bob, 10, 17 + bob), fill=TH)
     # Short legs alternate in the walk, while other poses keep their paws planted.
     leg_shift = ((frame % 3) - 1) if pose == "walk" else 0
-    d.rectangle((5 + leg_shift, 18 + bob, 8 + leg_shift, 22), fill=O)
-    d.rectangle((6 + leg_shift, 18 + bob, 7 + leg_shift, 21), fill=T)
-    d.rectangle((5 + leg_shift, 22, 8 + leg_shift, 22), fill=W)
-    d.rectangle((16 - leg_shift, 18 + bob, 19 - leg_shift, 22), fill=O)
-    d.rectangle((17 - leg_shift, 18 + bob, 18 - leg_shift, 21), fill=W)
-    d.rectangle((16 - leg_shift, 22, 20 - leg_shift, 22), fill=W)
+    d.rectangle((8 + leg_shift, 18 + bob, 11 + leg_shift, 22), fill=O)
+    d.rectangle((9 + leg_shift, 18 + bob, 10 + leg_shift, 21), fill=T)
+    d.rectangle((8 + leg_shift, 22, 11 + leg_shift, 22), fill=W)
+    d.rectangle((17 - leg_shift, 18 + bob, 20 - leg_shift, 22), fill=O)
+    d.rectangle((18 - leg_shift, 18 + bob, 19 - leg_shift, 21), fill=W)
+    d.rectangle((17 - leg_shift, 22, 21 - leg_shift, 22), fill=W)
     head_shift = -1 if pose == "look" and frame == 2 else 0
     head_bob = -1 if pose == "play" and frame in (1, 3) else 0
     hy = 7 + bob + head_shift + head_bob
@@ -90,13 +93,15 @@ def _standing(frame: int, pose: str) -> Image.Image:
 def _sitting(frame: int, pose: str) -> Image.Image:
     image = _standing(frame, "idle")
     d = ImageDraw.Draw(image)
-    d.rectangle((3, 14, 18, 23), fill=(0, 0, 0, 0))
-    d.rectangle((4, 13, 18, 21), fill=O)
-    d.rectangle((5, 14, 17, 20), fill=T)
-    d.rectangle((5, 14, 14, 16), fill=K)
-    d.rectangle((8, 18, 16, 20), fill=W)
-    d.rectangle((4, 21, 11, 22), fill=O)
-    d.rectangle((15, 20, 19, 22), fill=W)
+    d.rectangle((5, 14, 20, 23), fill=(0, 0, 0, 0))
+    d.ellipse((6, 13, 17, 22), fill=O)
+    d.rectangle((13, 13, 19, 21), fill=O)
+    d.ellipse((7, 14, 16, 21), fill=T)
+    d.rectangle((14, 14, 18, 20), fill=T)
+    d.rectangle((8, 14, 16, 16), fill=K)
+    d.rectangle((12, 18, 18, 20), fill=W)
+    d.rectangle((7, 21, 13, 22), fill=O)
+    d.rectangle((16, 20, 20, 22), fill=W)
     if pose == "scratch":
         # A hind paw comes up toward the cheek on alternating frames.
         d.rectangle((15, 13 - frame % 2, 17, 17), fill=O)
@@ -121,6 +126,19 @@ def _sleeping(frame: int) -> Image.Image:
     return image
 
 
+def _dozing(frame: int) -> Image.Image:
+    image = _sitting(frame, "sit")
+    d = ImageDraw.Draw(image)
+    # Lower ears and a closed eye read as a peaceful, upright rest.
+    d.rectangle((18, 0, 27, 6), fill=(0, 0, 0, 0))
+    d.polygon(((18, 6), (20, 4), (22, 7), (21, 9)), fill=O)
+    d.polygon(((23, 7), (25, 4), (27, 6), (25, 9)), fill=O)
+    d.line((23, 12, 24, 12), fill=E)
+    if frame in (1, 2):
+        d.rectangle((8, 17, 15, 18), fill=W)
+    return image
+
+
 def _stretching(frame: int) -> Image.Image:
     image = _standing(frame, "idle")
     d = ImageDraw.Draw(image)
@@ -135,6 +153,8 @@ def _stretching(frame: int) -> Image.Image:
 def corgi_frame(pose: str, frame: int) -> Image.Image:
     if pose == "sleep":
         return _sleeping(frame)
+    if pose == "doze":
+        return _dozing(frame)
     if pose == "sit":
         return _standing(0, "idle") if frame == 0 else _sitting(frame, "sit")
     if pose == "stand":
@@ -152,7 +172,7 @@ PET_ROWS = (
     ("idle", 4), ("breathe", 4), ("look", 4), ("stand", 4),
     ("walk", 6), ("play", 4), ("sit", 4), ("stretch", 4),
     ("sleep", 4), ("wake", 4), ("scratch", 4), ("happy", 4),
-    ("blink", 4),
+    ("blink", 4), ("doze", 4),
 )
 
 
@@ -208,13 +228,19 @@ def doghouse() -> Image.Image:
     d.polygon(((0, 11), (15, 0), (30, 11), (27, 14), (15, 5), (3, 14)), fill=O)
     d.polygon(((2, 11), (15, 2), (28, 11), (26, 12), (15, 4), (4, 12)), fill=ROOF)
     d.line((5, 9, 15, 2, 25, 9), fill=ROOF_LIGHT)
+    for x, y in ((7, 9), (11, 6), (16, 5), (21, 7), (25, 10)):
+        d.line((x, y, x + 2, y), fill=ROOF_LIGHT)
     d.rectangle((4, 13, 26, 25), fill=O)
     d.rectangle((5, 14, 25, 24), fill=WOOD)
     for y in (17, 21):
         d.line((5, y, 25, y), fill=WOOD_LIGHT)
+    d.line((7, 15, 7, 23), fill=WOOD_LIGHT)
+    d.line((23, 15, 23, 23), fill=WOOD_LIGHT)
+    d.point((9, 19), fill=ROOF)
+    d.point((22, 22), fill=ROOF)
     d.ellipse((11, 16, 20, 26), fill=O)
     d.ellipse((12, 17, 19, 26), fill=K)
-    d.rectangle((14, 17, 16, 22), fill=WOOD)
+    d.line((11, 24, 20, 24), fill=WOOD_LIGHT)
     return image
 
 

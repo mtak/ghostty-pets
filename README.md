@@ -57,7 +57,7 @@ Set `custom-shader` to the absolute path of `dist/m3-placeholder-2x.glsl` and ke
 
 ## M4 corgi and backyard preview
 
-M4 adds editable tricolor corgi frames and a layered backyard with doghouse, tree, flowers, grass, leaf, butterfly, and a ball synchronized to the pet's play episode. The 2× shader is an M4 review artifact; M5 will make the final responsive size variants.
+M4 adds editable tricolor corgi frames and a layered backyard with doghouse, tree, flowers, grass, leaf, butterfly, and a tennis ball synchronized to the pet's play episode. Unfocused panes select an upright doze pose. The 2× shader is an M4 review artifact; M5 will make the final responsive size variants.
 
 ```sh
 python3 tools/make_m4_art.py
@@ -65,7 +65,7 @@ python3 tools/build_m4.py --output dist/m4-corgi-backyard-2x.glsl
 python3 -m unittest discover -s tests -v
 ```
 
-Preview with `custom-shader = /absolute/path/to/ghostty-pets/dist/m4-corgi-backyard-2x.glsl` and `custom-shader-animation = true`. [Source-art preview](docs/evidence/m4/source-preview.png), [animation contact sheet](docs/evidence/m4/animation-contact-sheet.png), [format](docs/M4_FORMAT.md), and [milestone report](docs/M4_REPORT.md) document what to review. Removing `custom-shader` safely disables the overlay.
+Preview with `custom-shader = /absolute/path/to/ghostty-pets/dist/m4-corgi-backyard-2x.glsl` and `custom-shader-animation = true`. [Source-art preview](docs/evidence/m4/source-preview.png), [focus preview](docs/evidence/m4/focus-preview.png), [animation contact sheet](docs/evidence/m4/animation-contact-sheet.png), [format](docs/M4_FORMAT.md), and [milestone report](docs/M4_REPORT.md) document what to review. Removing `custom-shader` safely disables the overlay.
 
 ## Documentation
 
