@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "id": "tricolor-corgi",
+  "sheet": "corgi-v1.png",
+  "frame_size": [28, 24],
+  "anchor": [14, 23],
+  "clips": {
+    "idle": {"row": 0, "durations_ms": [450, 400, 120, 450], "loop": true, "speed": 1.0},
+    "breathe": {"row": 1, "durations_ms": [380, 380, 380, 380], "loop": true, "speed": 1.0},
+    "look": {"row": 2, "durations_ms": [350, 500, 450, 350], "loop": false, "speed": 1.0},
+    "stand": {"row": 3, "durations_ms": [150, 150, 150, 150], "loop": false, "speed": 1.0},
+    "walk": {"row": 4, "durations_ms": [140, 140, 140, 140, 140, 140], "loop": true, "speed": 1.0},
+    "play": {"row": 5, "durations_ms": [190, 190, 190, 190], "loop": true, "speed": 1.0},
+    "sit": {"row": 6, "durations_ms": [150, 150, 150, 150], "loop": false, "speed": 1.0},
+    "stretch": {"row": 7, "durations_ms": [300, 300, 300, 300], "loop": false, "speed": 1.0},
+    "sleep": {"row": 8, "durations_ms": [900, 800, 900, 800], "loop": true, "speed": 1.0},
+    "wake": {"row": 9, "durations_ms": [200, 200, 200, 200], "loop": false, "speed": 1.0},
+    "scratch": {"row": 10, "durations_ms": [230, 230, 230, 230], "loop": true, "speed": 1.0},
+    "happy": {"row": 11, "durations_ms": [180, 180, 180, 180], "loop": true, "speed": 1.0},
+    "blink": {"row": 12, "durations_ms": [200, 100, 100, 200], "loop": false, "speed": 1.0}
+  }
+}

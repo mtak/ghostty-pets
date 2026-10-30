@@ -65,6 +65,8 @@
 
 ## M4 — Corgi and living backyard
 
+**Status: IMPLEMENTED, awaiting human visual validation and approval.** The [M4 report](M4_REPORT.md) records automated checks, Linux compilation evidence, source-art previews, remaining performance/visual risks, and an exact manual checklist. M5 has not started.
+
 **Goal:** replace placeholders with release-quality art and coherent pet/environment interactions.
 
 **In scope:** approved tricolor pixel art, sit/blink/look/walk/stand/stretch/scratch/sleep/wake/happy/play animations, doghouse/tree/grass/flowers/ball, modest breeze/leaf/butterfly motion, scripted ball interaction.

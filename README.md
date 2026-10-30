@@ -2,7 +2,7 @@
 
 A tiny autonomous pixel-art pet living inside Ghostty, drawn by a self-contained GLSL post-processing shader.
 
-**Status:** M1, M2, and M3 approved; M4 has not started. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
+**Status:** M1, M2, and M3 approved; M4 corgi/backyard implementation is awaiting visual approval. **First release:** a tricolor Pembroke Welsh Corgi in a cozy backyard. Supported targets: Ghostty on macOS and Linux.
 
 ## Start here
 
@@ -55,12 +55,25 @@ python3 -m unittest discover -s tests -v
 
 Set `custom-shader` to the absolute path of `dist/m3-placeholder-2x.glsl` and keep `custom-shader-animation = true`. Remove the line and reload/restart Ghostty to disable it. See the [M3 format](docs/M3_FORMAT.md) for editable source fields and the [M3 report](docs/M3_REPORT.md) for the manual validation checklist and current limits.
 
+## M4 corgi and backyard preview
+
+M4 adds editable tricolor corgi frames and a layered backyard with doghouse, tree, flowers, grass, leaf, butterfly, and a ball synchronized to the pet's play episode. The 2× shader is an M4 review artifact; M5 will make the final responsive size variants.
+
+```sh
+python3 tools/make_m4_art.py
+python3 tools/build_m4.py --output dist/m4-corgi-backyard-2x.glsl
+python3 -m unittest discover -s tests -v
+```
+
+Preview with `custom-shader = /absolute/path/to/ghostty-pets/dist/m4-corgi-backyard-2x.glsl` and `custom-shader-animation = true`. [Source-art preview](docs/evidence/m4/source-preview.png), [animation contact sheet](docs/evidence/m4/animation-contact-sheet.png), [format](docs/M4_FORMAT.md), and [milestone report](docs/M4_REPORT.md) document what to review. Removing `custom-shader` safely disables the overlay.
+
 ## Documentation
 
 - [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md) — frozen product scope, functional requirements, UX and non-goals.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — shader constraints, proposed architecture, asset format and algorithms.
 - [`docs/DELIVERY_PLAN.md`](docs/DELIVERY_PLAN.md) — M1–M5 milestones, test matrices, review gates and release criteria.
 - [`docs/M3_FORMAT.md`](docs/M3_FORMAT.md) — versioned M3 pet/scene source format.
+- [`docs/M4_FORMAT.md`](docs/M4_FORMAT.md) — M4 pet and layered backyard source format.
 - [`docs/adr/`](docs/adr/) — independently reviewable architecture decisions.
 
 ## Authoritative references

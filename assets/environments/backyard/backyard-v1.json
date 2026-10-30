@@ -1,0 +1,66 @@
+{
+  "schema_version": 3,
+  "id": "cozy-backyard",
+  "canvas": [110, 45],
+  "ground_y": 7,
+  "home_x": 76,
+  "inset": 12,
+  "seed": 5,
+  "slot_ms": 12000,
+  "layers": [
+    {"id": "ground", "file": "ground.png", "frame_size": [110, 7], "durations_ms": [1000], "motion": "static", "position": [0, 0]},
+    {"id": "tree-trunk", "file": "tree-trunk.png", "frame_size": [14, 26], "durations_ms": [1000], "motion": "static", "position": [6, 7]},
+    {"id": "tree-canopy", "file": "tree-canopy.png", "frame_size": [26, 18], "durations_ms": [1200, 1200], "motion": "loop", "position": [0, 25]},
+    {"id": "doghouse", "file": "doghouse.png", "frame_size": [31, 26], "durations_ms": [1000], "motion": "static", "position": [29, 7]},
+    {"id": "flowers", "file": "flowers.png", "frame_size": [20, 9], "durations_ms": [1800, 1800], "motion": "loop", "position": [18, 7]},
+    {"id": "leaf", "file": "leaf.png", "frame_size": [4, 4], "durations_ms": [190, 190, 190], "motion": "path", "from": [18, 31], "to": [34, 8], "period_ms": 42000, "active_ms": 3000, "phase_ms": 11000},
+    {"id": "butterfly", "file": "butterfly.png", "frame_size": [8, 6], "durations_ms": [150, 150, 150, 150], "motion": "path", "from": [65, 25], "to": [99, 31], "period_ms": 61000, "active_ms": 4000, "phase_ms": 17000},
+    {"id": "ball", "file": "ball.png", "frame_size": [6, 6], "durations_ms": [150, 150, 150, 150], "motion": "interactive", "position": [93, 7]}
+  ],
+  "episodes": [
+    {"id": "idle-and-look", "weight": 2, "phases": [
+      {"clip": "breathe", "duration_ms": 3000, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "look", "duration_ms": 1600, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "blink", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"}
+    ]},
+    {"id": "scratch", "weight": 2, "phases": [
+      {"clip": "stand", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "scratch", "duration_ms": 1600, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "sit", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"}
+    ]},
+    {"id": "stretch", "weight": 1, "phases": [
+      {"clip": "stand", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "stretch", "duration_ms": 1200, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "sit", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"}
+    ]},
+    {"id": "short-nap", "weight": 1, "phases": [
+      {"clip": "sit", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "sleep", "duration_ms": 3200, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "wake", "duration_ms": 800, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "sit", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"}
+    ]},
+    {"id": "walk-left", "weight": 1, "phases": [
+      {"clip": "stand", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "walk", "duration_ms": 2000, "from_x": 0, "to_x": -18, "face": "left"},
+      {"clip": "look", "duration_ms": 500, "from_x": -18, "to_x": -18, "face": "left"},
+      {"clip": "walk", "duration_ms": 2000, "from_x": -18, "to_x": 0, "face": "right"},
+      {"clip": "sit", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"}
+    ]},
+    {"id": "walk-right", "weight": 1, "phases": [
+      {"clip": "stand", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"},
+      {"clip": "walk", "duration_ms": 2000, "from_x": 0, "to_x": 12, "face": "right"},
+      {"clip": "look", "duration_ms": 500, "from_x": 12, "to_x": 12, "face": "right"},
+      {"clip": "walk", "duration_ms": 2000, "from_x": 12, "to_x": 0, "face": "left"},
+      {"clip": "sit", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right"}
+    ]},
+    {"id": "ball-play", "weight": 2, "phases": [
+      {"clip": "stand", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right", "object_from_x": 0, "object_to_x": 0},
+      {"clip": "walk", "duration_ms": 1500, "from_x": 0, "to_x": 8, "face": "right", "object_from_x": 0, "object_to_x": 0},
+      {"clip": "play", "duration_ms": 900, "from_x": 8, "to_x": 8, "face": "right", "object_from_x": 0, "object_to_x": 4},
+      {"clip": "walk", "duration_ms": 1000, "from_x": 8, "to_x": 12, "face": "right", "object_from_x": 4, "object_to_x": 8},
+      {"clip": "happy", "duration_ms": 600, "from_x": 12, "to_x": 12, "face": "right", "object_from_x": 8, "object_to_x": 8},
+      {"clip": "walk", "duration_ms": 1500, "from_x": 12, "to_x": 0, "face": "left", "object_from_x": 8, "object_to_x": 0},
+      {"clip": "sit", "duration_ms": 600, "from_x": 0, "to_x": 0, "face": "right", "object_from_x": 0, "object_to_x": 0}
+    ]}
+  ]
+}
